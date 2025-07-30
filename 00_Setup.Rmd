@@ -1,0 +1,59 @@
+---
+title: "Setup and preparations"
+author: "Chloé R. Nater"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(remotes)
+
+```
+
+This document describes the steps required for getting started with Nature Index (NI) analyses. 
+If you already have 1) installations of the latest versions of "NIcalc" and "NIflex" and 2) access to the NI database via login credentials set up as R environmental variables, you can skip the steps described in this document. 
+
+
+## Installing packages and dependencies
+
+First, we have to install the designated packages developed as part of Nature Index workflows.
+This includes the packages "NIcalc" and "NIflex". 
+"NIcalc" was developed by Bård Pedersen, Jens Åström, and Matt Grainger as part of the 2020 NI update and contains a suite of functions for communication with the NI database and for updating, calculating, and visualizing both indicator data and NI estimates. 
+"NIflex" was developed by Chloé R. Nater in 2023 as part of a research and development project aiming to set up indicators for a new framework for ecological condition assessments (https://ninanor.github.io/ecosystemCondition/). It includes a range of wrapper functions for streamlined calculation of both NI in the traditional sense and any custom/bespoke index calculated from data in NI database and using the NI framework. 
+
+Neither of these packages are on CRAN; consequently, they need to be installed directly from GitHub. We will use `install_github()` from the `remotes` package for this. 
+Additionally, please note that building vignettes requires an LaTeX installation; if you get an error related to missing LaTeX installation, you can install TinyTeX (https://yihui.org/tinytex/) as follows: 
+
+```{r, eval = FALSE}
+install.packaged("tinytex")
+tinytex::install_tinytex()
+```
+
+Then proceed to installing "NIcalc" and "NIflex" (you may have to install/update dependencies as well): 
+
+```{r, eval = FALSE}
+## Install NIcalc
+remotes::install_github(repo = "NINAnor/NIcalc", build_vignettes = TRUE)
+
+## Install NIflex
+remotes::install_github(repo = "NINAnor/NIflex", build_vignettes = TRUE)
+```
+
+## Access to the Nature Index Database
+
+At the time of writing, login credentials are required for accessing the NI database. 
+Read and download access will be made public in late 2025, so this requirement may change partially later. Write access, however, will remain exclusive to people that have been granted administrative rights. 
+
+Updating the indicator data calculations in the database (chapter 1, "01_IndicatorData_updates.Rmd") requires write access. All other parts of the workflow should be possible to run with read/download access only. 
+
+Since we will have to connect to the database several times throughout the different chapters, we will store our login credentials as local environmental variables in R using the following code: 
+
+```{r, eval = FALSE}
+Sys.setenv(NIdb_username = "your_username")
+Sys.setenv(NIdb_password = "your_passowrd")
+```
+
+If you have forgotten your password, you can reset it via the "Forgotten password?" link on the login page of https://naturindeks.nina.no/. If you are unsure about your username, or want to request (admin) access, contact the NI core team (naturindeks@nina.no), the database administrator Siw Berge (siw.berge@nina.no), or responsible research director Signe Nybø (signe.nybo@nina.no).
+
+
