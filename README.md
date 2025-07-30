@@ -1,36 +1,19 @@
-# nina-template-r
+# The Norwegian Nature Index 2025
 
-Modify this `README.md` file, to explain what your software does.
+This repository contains code and documentation used in the 2025 update of the Norwegian Nature Index (NI).
 
-# Additional resources
+The work encompasses the following parts: 
 
-In addition to this template, here is a list of useful resources you could start from:
-- https://github.com/NINAnor/NinaR
+- Update of indicator data calculation in the Nature Index database
+- Visualization of original and scaled indicator data
+- Calculations of the NI for all seven main ecosystems: forest ("skog"), mountain ("fjell"), wetland ("våtmark"), open grassland ("åpent lavland"), freshwater ("ferskvann", including requested thematic indices), coast ("kyst"), and marine pelagic ("hav").
+-  Visualizations of calculated NI (maps, time-series, and auxiliary plots)
 
-# Good practices
+The data underlying this work are stored in the NI database (https://naturindeks.nina.no/) and have been delivered by species and data management experts from the Norwegian Institute for Nature Research (NINA), the Norwegian Institute for Water Research (NIVA), the Norwegian Institute for Bioeconomy Research (NIBIO), the Norwegian Institute for Marine Research (HI), and BirdLife Norway. 
 
-## .gitignore
+Calculations and analyzes are done using the NIcalc (https://github.com/NINAnor/NIcalc) and NIflex (https://github.com/NINAnor/NIflex) R pacakges.
+Some visualizations are built based on code from NIviz (https://github.com/NINAnor/NIviz). 
 
-Add paths and files that you do not want to be committed by adding them to .gitignore.
+All materials in this repository, as well as the NI database, will be made publicly accessible when NI2025 is officially launched in November 2025. 
+Any inquiries about the materials can be sent to naturindeks@nina.no.  
 
-## pre-commit
-
-`pre-commit` can run tools to check your changes and refactor code (using `styler`), to keep your repository clean and avoid common mistakes. The list of actions that are executed are defined in `.pre-commit-config.yaml`.
-
-### Installation
-
-1. Install Python if not available. It can be downloaded from [python.org/downloads](https://www.python.org/downloads/). Be sure to add Python to your PATH.
-2. Install `pipx`, as it is the suggested way to install Python tools:
-   - Windows users: `py -3 -m pip install pipx`
-   - Linux users: `python3 -m pip install pipx`
-3. Install `pre-commit`: `pipx install pre-commit`
-4. Configure PATH: `pipx ensurepath`
-5. Close and open your shell again
-6. Enter into your git repository and install the hooks: `pre-commit install` (optional, but recommended)
-
-### How to use it
-
-In case you executed `pre-commit install`, `pre-commit` hooks will be executed each time you will try to commit (`git commit`). If any of the checks fail or if any files that is going to be committed is changed (because a tool refactored or cleaned it), the commit will fail.
-
-The suggested method to use `pre-commit` is to run it before trying to commit your changes, using `pre-commit run -a`. You can run this command multiple times, to check if the changes are ready to be committed.
-After all the tests succeeded, the changes can be staged (`git add`) and committed.
