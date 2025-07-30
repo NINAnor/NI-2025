@@ -399,10 +399,11 @@ the NI database. Read and download access will be made public in late
 2025, so this requirement may change partially later. Write access,
 however, will remain exclusive to people that have been granted
 administrative rights.</p>
-<p>Updating the indicator data calculations in the database (chapter 1,
-“01_IndicatorData_updates.Rmd”) requires write access. All other parts
-of the workflow should be possible to run with read/download access
-only.</p>
+<p>All analyses and visualizations in this workflow should be possible
+to run with read/download access only. Direct upload of tables
+containing results to the database would require write access, but this
+has not been scripted to work directly from R yet and is currently
+handled manually by the database administrator (subject to changes).</p>
 <p>Since we will have to connect to the database several times
 throughout the different chapters, we will store our login credentials
 as local environmental variables in R using the following code:</p>
