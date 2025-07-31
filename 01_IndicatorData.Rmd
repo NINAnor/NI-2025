@@ -1,0 +1,117 @@
+---
+title: "Indicator data: calculations and visualizations"
+author: "Chloé R. Nater"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(NIcalc)
+library(NIflex)
+library(magrittr)
+library(dplyr)
+```
+
+The basis for the Nature Index (NI) calculations are the indicator data. These are observations, model estimates, or expert judgements that quantify the state (typically abundance) of the different indicator species, species groups, or habitat types. 
+
+The "raw" indicator data, including associated reference values, are stored in the NI database (https://naturindeks.nina.no/). As part of the presentation of NI2025, we want to present the following for each individual indicator: 
+
+- Raw indicator values, by area, as time-series plots
+- Raw indicator values, by area, as pair of value and uncertainty maps
+- Scaled indicator values, by area, as time-series plots
+- Scaled indicator values, by area, as pairs of value and uncertainty maps
+- Area-averaged indicator values (referred to as "indicator index" in the documentation from NI2020), as part of the time-series plots for scaled indicator values
+
+The area-averaged indicator values are also required to be fed back into the NI database as a separate table that can be used for corresponding visualizations on the webpage. 
+
+## General setup
+
+There are a few variables that are used repeatedly in the code in this chapter. 
+We start off by defining these here: 
+
+```{r}
+## Indicator focal years
+ind_focalYears <- c(1990, 1995, 2000, 2005, 2010, 2014, 2019, 2024)
+
+## Toggle for using/ignoring reference value uncertainty
+uncertain_refValue <- FALSE
+#uncertain_refValue <- TRUE
+```
+
+## Connect to the Nature Index Database
+
+To access and download indicator data, we need to retrieve a token from the NI database. 
+For that to work, we need access to our NI database access credentials; we retrieve those from environmental variables (if you have not saved them as environmental variables, you can find the code for doing that in chapter 0; alternatively, you can also manually set them here):
+
+```{r, eval = FALSE}
+NIdb_username <- Sys.getenv("NIdb_username")
+NIdb_password <- Sys.getenv("NIdb_password")
+```
+
+##  List indicators and retrieve data
+
+If the person running this script has full access to the database (admin rights), they should be able to access the complete list of indicators by directly pulling it from the database using `NIcalc::getIndicators()`:
+
+```{r, eval = FALSE}
+indicatorList <- NIcalc::getIndicators() %>%
+  dplyr::arrange(name)
+
+saveRDS(indicatorList, file = "data/NI2025_IndicatorList.rds")
+```
+
+Alternatively, you can read in the saved version of the indicator list that comes with this repository: 
+```{r}
+indicatorList <- readRDS("data/NI2025_IndicatorList.rds")
+```
+
+The list is contains a total of 203 indicators, and is ordered alphabetically:
+```{r}
+indicatorList
+```
+
+Now that we have all indicators listed we can download the entire set of indicator data. This takes a while to run, and we therefore save the data import as a local file after it finished downloading so that we do not have to re-download the entire dataset repeatedly. 
+
+```{r, eval = FALSE}
+indicatorImport <- list()
+
+for(i in 1:nrow(indicatorList)){
+  indicatorImport[[i]] <- NIcalc::importDatasetApi(
+    username = NIdb_username,
+    password = NIdb_password,
+    indic = indicatorList$name[i]
+  )
+}
+
+names(indicatorImport) <- indicatorList$id
+
+saveRDS(indicatorImport, "data/indicatorImport.rds")
+```
+```{r, echo = FALSE}
+indicatorImport <- readRDS("data/IndicatorImport.rds")
+```
+
+The next step in the NI workflow is "assembling" the data. This step makes sure that the parameters characterizing uncertainty distributions for indicator values are present for all data points (see documentation of `NIcalc::assembleNiObject()` for more details). This also requires some time to run, and like the previous step, we will save the output so we can work directly from that afterwards.
+
+```{r, eval = FALSE}
+indicatorData <- list()
+
+for(i in 1:nrow(indicatorList)){
+#  indicatorData[[i]] <- NIcalc::assembleNiObject(
+  indicatorData[[i]] <- assembleNiObject(
+    inputData = indicatorImport[[i]],
+    predefNIunits = c(allArea = TRUE, parts = TRUE, counties = FALSE),
+    indexType = "thematic"
+  )
+}
+
+names(indicatorData) <- indicatorList$id
+
+saveRDS(indicatorData, "data/indicatorData_assembled.rds")
+```
+```{r, echo = FALSE}
+indicatorData <- readRDS("data/IndicatorData_assembled.rds")
+```
+
+## Simulate indicator value distributions
+

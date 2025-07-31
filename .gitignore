@@ -57,3 +57,10 @@ rsconnect/
 /*_files/
 
 # End of https://www.toptal.com/developers/gitignore/api/R
+
+
+### Custom additions ###
+
+# Large data files
+data/indicatorImport.rds
+data/indicatorData_assembled.rds
