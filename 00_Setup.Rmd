@@ -39,6 +39,13 @@ remotes::install_github(repo = "NINAnor/NIcalc", build_vignettes = TRUE)
 ## Install NIflex
 remotes::install_github(repo = "NINAnor/NIflex", build_vignettes = TRUE)
 ```
+In addition, there are a few CRAN packages that are required. These can be installed using the following code: 
+
+```{r}
+pkgList <- c("dplyr", "magrittr")
+
+install.packages(pkgList)
+```
 
 ## Access to the Nature Index Database
 
