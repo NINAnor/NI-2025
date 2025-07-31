@@ -120,3 +120,38 @@ indicatorData <- readRDS("data/IndicatorData_assembled.rds")
 
 ## Simulate indicator value distributions
 
+For visualizing indicator values (both original and scaled), we need associated measures of uncertainty. While all indicator value have such information associated in the database, the format thereof varies, i.e. some indicators have lower and upper quartiles in addition to means reported, while others are specified via custom distributions. 
+
+We require a standardized way for presenting values including uncertainty across all indicators. 
+In previous iterations of NI, it seems that results were displayed as median plus 95% confidence interval (= 2.5% and 97.5% quantiles, according to NINA Report 1990, "Nature Index System Documentation"). 
+While working with alternative approaches to visualizing indicator data, we also experimented with using coefficient of variation (= relative standard deviation = sd/mean) for visualizing uncertainty in maps (see here https://ninanor.github.io/NIviz/maps-1.html), and displays of the entire indicator value distributions (e.g. 5.1 here: https://ninanor.github.io/NIviz/other-figures.html).
+
+Based on this, we have a need for a) different measures of uncertainty and b) samples of draws from the uncertainty distributions of all indicators. We can obtain all of this information from simulations. The function `simulate_IndicatorData()` can be used to run the corresponding simulations for all indicators and years with available data: 
+
+```{r}
+## Source functions
+source("R/simulate_IndicatorData.R")
+source("R/scale_IndicatorValues.R")
+
+## Make folder for storing data as files
+if(!dir.exists("data/simulated_IndicatorData")){
+  dir.create("data/simulated_IndicatorData")
+}
+
+## Set up list for storing all results
+simData <- list()
+
+## For all indicators, simulate data from distributions and save as files and in list
+
+for(i in 1:nrow(indicatorList)){
+  
+  simData_i <- simulate_IndicatorData(indData = indicatorData[[i]])
+  
+  simData[[i]] <- simData_i
+  
+  saveRDS(simData_i, file = paste0("data/simulated_IndicatorData/simData_id_", indicatorList$id[i], ".rds"))
+}
+
+``` 
+
+

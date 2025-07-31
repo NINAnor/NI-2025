@@ -64,3 +64,4 @@ rsconnect/
 # Large data files
 data/indicatorImport.rds
 data/indicatorData_assembled.rds
+data/simulated_IndicatorData
