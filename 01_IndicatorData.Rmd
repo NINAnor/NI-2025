@@ -103,8 +103,7 @@ The next step in the NI workflow is "assembling" the data. This step makes sure 
 indicatorData <- list()
 
 for(i in 1:nrow(indicatorList)){
-#  indicatorData[[i]] <- NIcalc::assembleNiObject(
-  indicatorData[[i]] <- assembleNiObject(
+  indicatorData[[i]] <- NIcalc::assembleNiObject(
     inputData = indicatorImport[[i]],
     predefNIunits = c(allArea = TRUE, parts = TRUE, counties = FALSE),
     indexType = "thematic"
