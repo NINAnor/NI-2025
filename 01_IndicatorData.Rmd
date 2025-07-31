@@ -39,6 +39,12 @@ uncertain_refValue <- FALSE
 #uncertain_refValue <- TRUE
 ```
 
+Additionally, we will define and set a seed to ensure reproducibility of the simulations:
+```{r}
+mySeed <- 0
+set.seed(mySeed)
+```
+
 ## Connect to the Nature Index Database
 
 To access and download indicator data, we need to retrieve a token from the NI database. 
