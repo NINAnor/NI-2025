@@ -11,6 +11,9 @@ library(NIcalc)
 library(NIflex)
 library(magrittr)
 library(dplyr)
+library(ggplot2)
+library(paletteer)
+library(svglite)
 ```
 
 The basis for the Nature Index (NI) calculations are the indicator data. These are observations, model estimates, or expert judgements that quantify the state (typically abundance) of the different indicator species, species groups, or habitat types. 
@@ -27,16 +30,20 @@ The area-averaged indicator values are also required to be fed back into the NI 
 
 ## General setup
 
-There are a few variables that are used repeatedly in the code in this chapter. 
+There are a few variables that are used to control execution of parts of the code in this chapter. 
 We start off by defining these here: 
 
 ```{r}
 ## Indicator focal years
 ind_focalYears <- c(1990, 1995, 2000, 2005, 2010, 2014, 2019, 2024)
 
-## Toggle for using/ignoring reference value uncertainty
-uncertain_refValue <- FALSE
-#uncertain_refValue <- TRUE
+## Toggle for using/ignoring reference value uncertainty in visualizations
+#uncertainRefValue <- TRUE
+uncertainRefValue <- FALSE
+
+## Toggle for visualizing scaled values truncated before or after summarising
+truncAfterSummary <- TRUE
+#truncAfterSummary <- FALSE
 ```
 
 Additionally, we will define and set a seed to ensure reproducibility of the simulations:
@@ -128,7 +135,7 @@ While working with alternative approaches to visualizing indicator data, we also
 
 Based on this, we have a need for a) different measures of uncertainty and b) samples of draws from the uncertainty distributions of all indicators. We can obtain all of this information from simulations. The function `simulate_IndicatorData()` can be used to run the corresponding simulations for all indicators and years with available data: 
 
-```{r}
+```{r, eval = FALSE}
 ## Source functions
 source("R/simulate_IndicatorData.R")
 source("R/scale_IndicatorValues.R")
@@ -172,7 +179,7 @@ The helper function `summarise_IndicatorDist()` takes the raw and scaled indicat
 
 We first source the function, and then run it on each of the three datasets (raw, scaled with fixed reference, scaled with sampled reference) available for all indicators. The results we will save as local .rds and .csv files. 
 
-```{r}
+```{r, eval = FALSE}
 ## Source function
 source("R/summarise_IndicatorDist.R")
 
@@ -220,4 +227,164 @@ TBA
 For the remainder of this chapter, we will work with one indicator at a time and read in the respective simulated datasets anew. This means we can remove the large objects containing data for all indicators simultaneously from the workspace:
 ```{r, warning = FALSE}
 rm(simData, indicatorData, indicatorImport)
+```
+
+There are two types of visualizations of indicator data that we are aiming for:
+
+1. Time-series plots of medians and 95% confidence intervals (featuring lines for different areas)
+2. Year-specific maps of a) medians and b) uncertainty as relative standard deviation
+
+Both visualizations will be done for the unscaled (raw) and scaled indicator values. 
+The goal for the Nature index database is that those visualizations 
+For 1., we ultimately also want to include a line for the area-aggregated "indicator index". Calculation thereof is not included in the code yet, but will be added soon.
+
+Below, we present the corresponding visualizations in indicator-specific sub-chapters. There are a few things to note: 
+
+- The defaults for visualization of scaled indicator values are using uncertainty statistics truncated after summarising, and treating the calculations based on fixed references as the baseline. This can be changed using the toggles `truncAfterSummary` and `uncertainRefValue` at the start of this script.
+- Visualizations will be partially displayed in this document, and also saved as files.
+- In this document, we will display 1. featuring all areas and 2. for the most recent year, 2024. Maps for previous years have not been assembled yet, but these will be part of the presentation of data and results on the new NI webpage.
+- For now, the visualizations are static. The goal for the website is to have interactive elements in the figures, including: menus to toggle on and off different time series (and reference levels), "sliders" to change year for maps, simultaneous highlights in median and uncertainty maps, etc. 
+- Visualizations of the entire value distributions (see under 5.1. here: https://ninanor.github.io/NIviz/other-figures.html) will not be done for individual indicators (only for the aggregated NI for the different ecosystems).
+
+First, we set up directories, determine which scaled values file to use, define a plot color to use in cases where we have time series for many areas, and set up lists to store the plots in R:
+```{r}
+## Set up folder for plots (if not present already)
+if(!dir.exists("plots")){
+  dir.create("plots")
+}
+
+## Select correct file for scaled data
+filename_scaled <- dplyr::case_when(
+  !uncertainRefValue & truncAfterSummary ~ "fixedRef",
+  !uncertainRefValue & !truncAfterSummary ~ "fixedRef_truncPreSum",
+  uncertainRefValue & truncAfterSummary ~ "sampledRef",
+  uncertainRefValue & !truncAfterSummary ~ "sampledRef_truncPreSum",
+)
+
+## Set time-series plot color for indicators with > 20 areas
+plot.col <- "#D37295FF"
+
+## Make lists to store plots for each indicator
+TS_raw <- list()
+TS_scaled <- list()
+MAP_raw <- list()
+MAP_scaled <- list()
+
+```
+
+Then, we proceed to plot time series and maps: 
+```{r}
+for(i in 1:nrow(indicatorList)){
+  
+  ## Extract indicator name and id
+  ind_id <- indicatorList$id[i]
+  ind_name <- indicatorList$name[i]
+  
+  message(crayon::bold(crayon::green(paste0(ind_name))))
+  
+  ## Make subfolder for species in target directory & set save path
+  if(!dir.exists(paste0("plots/id_", ind_id, "_", stringr::str_replace_all(ind_name, " ", "_")))){
+    dir.create(paste0("plots/id_", ind_id, "_", stringr::str_replace_all(ind_name, " ", "_")))
+  }
+  savePath_i <- paste0("plots/id_", ind_id, "_", stringr::str_replace_all(ind_name, " ", "_"))
+  
+  ## Load indicator datasets
+  message("Processing indicator data...")
+  
+  data_raw <- readRDS(paste0("data/IndicatorData_StatSummaries/statSummary_id_", ind_id, "_raw.rds")) %>%
+    dplyr::mutate(year_t = as.integer(year))
+  
+  data_scaled <- readRDS(paste0("data/IndicatorData_StatSummaries/statSummary_id_", ind_id, "_scaled_", filename_scaled, ".rds")) %>%
+    dplyr::mutate(year_t = as.integer(year))
+  
+  ## Truncate scaled values (if necessary)
+  data_rows <- c("mean", "median", "q025", "q05", "q25", "q75", "q90", "q975") 
+  
+  data_scaled <- data_scaled %>%
+    dplyr::mutate(dplyr::across(.cols = all_of(data_rows), ~ ifelse(. > 1, 1, .)))
+  
+  ## Count areas for picking time series display
+  manyAreas <- ifelse(length(unique(data_raw$ICunitName)) > 20, TRUE, FALSE)
+  
+  ## Set years to highlight
+  minYear <- min(data_raw$year_t)
+  maxYear <- max(data_raw$year_t)
+  
+  if(minYear >= ind_focalYears[1]){
+    plot.yearH <- ind_focalYears[which(ind_focalYears >= minYear)]
+  }else{
+    plot.yearH <- unique(c(minYear, rev(seq(from = ind_focalYears[1], to = minYear, by = -5)), ind_focalYears))
+  }
+  
+  ## Prepare time series plots for each indicator
+  message("Drawing time-series plots...")
+  
+  # Raw data
+  if(!manyAreas){
+    ts_raw <- ggplot(data_raw, aes(x = year_t)) + 
+      geom_point(aes(y = median, color = ICunitName)) + 
+      geom_errorbar(aes(ymin = q025, ymax = q975, color = ICunitName), width = 0.5, alpha = 0.25) + 
+      geom_line(aes(y = median, color = ICunitName)) + 
+      xlab("Year") + ylab("Indicator value (unscaled)") + 
+      ggtitle(ind_name) +
+      paletteer::scale_color_paletteer_d(palette = "ggthemes::Tableau_20", name = "Area") +
+      scale_x_continuous(breaks = plot.yearH) + 
+      theme_bw() + 
+      theme(legend.position = "bottom", 
+            panel.grid.minor = element_blank(),
+            axis.text.x = element_text(angle = 45, vjust = 0.8))
+  }else{
+    ts_raw <- ggplot(data_raw, aes(x = year_t)) + 
+      geom_point(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) + 
+      geom_errorbar(aes(ymin = q025, ymax = q975, group = ICunitName), width = 0.5, color = plot.col, alpha = 0.1) + 
+      geom_line(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) + 
+      xlab("Year") + ylab("Indicator value (unscaled)") + 
+      ggtitle(ind_name) +
+      scale_x_continuous(breaks = plot.yearH) + 
+      theme_bw() + 
+      theme(legend.position = "bottom", 
+            panel.grid.minor = element_blank(),
+            axis.text.x = element_text(angle = 45, vjust = 0.8))
+  }
+  
+  TS_raw[[i]] <- ts_raw
+  ggsave(file = paste0(savePath_i, "/TimeSeries_raw.svg"), plot = ts_raw, width = 8, height = ifelse(manyAreas, 5, 6.5))
+  ggsave(file = paste0(savePath_i, "/TimeSeries_raw.pdf"), plot = ts_raw, width = 8, height = ifelse(manyAreas, 5, 6.5))
+  
+  # Scaled data
+  if(!manyAreas){
+    ts_scaled <- ggplot(data_scaled, aes(x = year_t)) + 
+      geom_point(aes(y = median, color = ICunitName)) + 
+      geom_errorbar(aes(ymin = q025, ymax = q975, color = ICunitName), width = 0.5, alpha = 0.25) + 
+      geom_line(aes(y = median, color = ICunitName)) + 
+      ylim(0, 1) + 
+      xlab("Year") + ylab("Indicator value (unscaled)") + 
+      ggtitle(ind_name) +
+      paletteer::scale_color_paletteer_d(palette = "ggthemes::Tableau_20", name = "Area") + 
+      scale_x_continuous(breaks = plot.yearH) + 
+      theme_bw() + 
+      theme(legend.position = "bottom", 
+            panel.grid.minor = element_blank(),
+            axis.text.x = element_text(angle = 45, vjust = 0.8))
+  }else{
+    ts_scaled <- ggplot(data_scaled, aes(x = year_t)) + 
+      geom_point(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) + 
+      geom_errorbar(aes(ymin = q025, ymax = q975, group = ICunitName), width = 0.5, color = plot.col, alpha = 0.1) + 
+      geom_line(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) +
+      ylim(0, 1) + 
+      xlab("Year") + ylab("Indicator value (unscaled)") + 
+      ggtitle(ind_name) +
+      scale_x_continuous(breaks = plot.yearH) + 
+      theme_bw() + 
+      theme(legend.position = "bottom", 
+            panel.grid.minor = element_blank(),
+            axis.text.x = element_text(angle = 45, vjust = 0.8))
+  }
+  
+  TS_scaled[[i]] <- ts_scaled
+  ggsave(file = paste0(savePath_i, "/TimeSeries_scaled.svg"), plot = ts_scaled, width = 8, height = ifelse(manyAreas, 5, 6.5))
+  ggsave(file = paste0(savePath_i, "/TimeSeries_scaled.pdf"), plot = ts_scaled, width = 8, height = ifelse(manyAreas, 5, 6.5))
+  
+  message("")
+}
 ```

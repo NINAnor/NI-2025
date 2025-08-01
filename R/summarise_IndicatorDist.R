@@ -44,7 +44,7 @@ summarise_IndicatorDist <- function(indSim,
                        q05 = quantile(value_trunc, probs = 0.05),
                        q25 = quantile(value_trunc, probs = 0.25),
                        q75 = quantile(value_trunc, probs = 0.75),
-                       q90 = quantile(value_trunc, probs = 0.90),
+                       q95 = quantile(value_trunc, probs = 0.95),
                        q975 = quantile(value_trunc, probs = 0.975),
                        .groups = "keep") %>%
       dplyr::ungroup()
