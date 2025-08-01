@@ -61,7 +61,11 @@ rsconnect/
 
 ### Custom additions ###
 
-# Large data files
+# Generated data files
 data/indicatorImport.rds
 data/indicatorData_assembled.rds
 data/simulated_IndicatorData
+data/IndicatorData_StatSummaries
+
+
+

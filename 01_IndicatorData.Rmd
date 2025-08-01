@@ -144,14 +144,80 @@ simData <- list()
 ## For all indicators, simulate data from distributions and save as files and in list
 
 for(i in 1:nrow(indicatorList)){
+  message("")
+  message(crayon::bold(crayon::green(paste0(indicatorList$name[i]))))
   
   simData_i <- simulate_IndicatorData(indData = indicatorData[[i]])
   
   simData[[i]] <- simData_i
   
   saveRDS(simData_i, file = paste0("data/simulated_IndicatorData/simData_id_", indicatorList$id[i], ".rds"))
+  message("")
 }
 
+## Save total list containing all datasets
+saveRDS(simData, file = "data/simulated_IndicatorData/simData_all.rds")
 ``` 
 
+## Summarize indicator value distributions
 
+In the next step, we want to calculated some summary metrics for our indicator data. 
+The helper function `summarise_IndicatorDist()` takes the raw and scaled indicator datasets and calculates the following metrics for each year- and area-specific indicator value: 
+
+- Mean
+- Median
+- Standard deviation
+- Relative standard deviation
+- 2.5%, 5%, 25%, 75%, 95%, and 97.5% quantiles
+
+We first source the function, and then run it on each of the three datasets (raw, scaled with fixed reference, scaled with sampled reference) available for all indicators. The results we will save as local .rds and .csv files. 
+
+```{r}
+## Source function
+source("R/summarise_IndicatorDist.R")
+
+## Make folder for storing data as files
+if(!dir.exists("data/IndicatorData_StatSummaries")){
+  dir.create("data/IndicatorData_StatSummaries")
+}
+
+savePath <- "data/IndicatorData_StatSummaries/"
+
+## Re-set seed
+set.seed(mySeed)
+
+## Summarise indicator value distributions for all datasets and indicators
+for(i in 1:nrow(indicatorList)){
+  message(crayon::bold(crayon::green(paste0(indicatorList$name[i]))))
+  
+  # Raw (unscaled data)
+  summarise_IndicatorDist(indSim = simData[[i]]$raw,
+                          ind_id = indicatorList$id[i],
+                          dataset_name = "raw",
+                          savePath = savePath)
+  
+  # Scaled using fixed reference
+  summarise_IndicatorDist(indSim = simData[[i]]$scaled_fixedRef,
+                          ind_id = indicatorList$id[i],
+                          dataset_name = "scaled_fixedRef",
+                          savePath = savePath)
+  
+  # Scaled using sampled reference
+  summarise_IndicatorDist(indSim = simData[[i]]$scaled_sampledRef,
+                          ind_id = indicatorList$id[i],
+                          dataset_name = "scaled_sampledRef",
+                          savePath = savePath)
+  message("")
+}
+```
+
+## Calculating indicator indices
+TBA
+
+
+## Visualizing raw and scaled indicator data
+
+For the remainder of this chapter, we will work with one indicator at a time and read in the respective simulated datasets anew. This means we can remove the large objects containing data for all indicators simultaneously from the workspace:
+```{r, warning = FALSE}
+rm(simData, indicatorData, indicatorImport)
+```
