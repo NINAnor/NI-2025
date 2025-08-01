@@ -42,7 +42,7 @@ remotes::install_github(repo = "NINAnor/NIflex", build_vignettes = TRUE)
 In addition, there are a few CRAN packages that are required. These can be installed using the following code: 
 
 ```{r}
-pkgList <- c("dplyr", "magrittr")
+pkgList <- c("dplyr", "ggplot2", "magrittr", "paletteer", "readr", "svglite")
 
 install.packages(pkgList)
 ```
