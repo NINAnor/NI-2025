@@ -32,7 +32,7 @@ simulate_IndicatorData <- function(indData,
   # Add spatial unit and year
   sampleData_ref <- as.data.frame(sampleMat_ref) %>%
     tibble::add_column(.before=1,
-                       ICunitID = row.names(sampleMat_ref)) %>%
+                       ICunitId = row.names(sampleMat_ref)) %>%
     tibble::add_column(.after = 1,
                        year = NA) 
   
@@ -61,7 +61,6 @@ simulate_IndicatorData <- function(indData,
     
     # Sample from distributions (if values are available)
     if(!allNA){
-      message(paste0("Year ", years[t]))
       sampleMat_t <- NIcalc::sampleObsMat(
         ICunitId = indValues_t$ICunitId, 
         value = indValues_t$expectedValue,
@@ -73,13 +72,12 @@ simulate_IndicatorData <- function(indData,
         nsim = nsim
       )
     }else{
-      message(paste0("Year ", years[t], " (skipped due to all NA)"))
       next
     }
     
     sampleData_t <- as.data.frame(sampleMat_t) %>%
       tibble::add_column(.before=1,
-                         ICunitID = row.names(sampleMat_t)) %>%
+                         ICunitId = row.names(sampleMat_t)) %>%
       tibble::add_column(.after = 1,
                          year = years[t]) 
     
@@ -93,9 +91,14 @@ simulate_IndicatorData <- function(indData,
   
   ## Add spatial unit names
   areas <- data.frame(ICunitName = unname(rownames(indData$ICunits)),
-                      ICunitID = as.character(unname(indData$ICunits)))
+                      ICunitId = as.character(unname(indData$ICunits)))
+  
+  areas <- indData$referenceValues %>%
+    dplyr::select(ICunitId, ICunitName) %>%
+    dplyr::mutate(ICunitId = as.character(ICunitId))
+  
   comb <- comb %>%
-    dplyr::left_join(areas, by = "ICunitID") %>%
+    dplyr::left_join(areas, by = "ICunitId") %>%
     dplyr::relocate(ICunitName, .after = 1)
   
  
@@ -127,12 +130,12 @@ simulate_IndicatorData <- function(indData,
     dplyr::select(ICunitId, expectedValue) %>%
     dplyr::mutate(ICunitId = as.character(ICunitId)) %>%
     dplyr::rename(refValue_fixed = expectedValue,
-                  ICunitID = ICunitId)
+                  ICunitId = ICunitId)
   
   # Merge reference values into indicator table and drop NA values
   simData_raw <- comb_values_long %>%
-    dplyr::left_join(comb_ref_long, by = c("ICunitID", "ICunitName", "sampleID"))%>%
-    dplyr::left_join(fixed_ref_long, by = "ICunitID") %>%
+    dplyr::left_join(comb_ref_long, by = c("ICunitId", "ICunitName", "sampleID"))%>%
+    dplyr::left_join(fixed_ref_long, by = "ICunitId") %>%
     dplyr::filter(!is.na(value))
   
   
@@ -147,7 +150,7 @@ simulate_IndicatorData <- function(indData,
                                                    reference = refValue_fixed,
                                                    scalingModel = scalingModel),
                   value_sc_trunc = ifelse(value_sc > 1, 1, value_sc)) %>%
-    dplyr::select(ICunitID, ICunitName, year, value_sc, value_sc_trunc)
+    dplyr::select(ICunitId, ICunitName, year, value_sc, value_sc_trunc)
     
   # Scale indicator values using sampled reference (including reference uncertainty)
   simData_scaled_sampledRef <- simData_raw %>%
@@ -155,13 +158,21 @@ simulate_IndicatorData <- function(indData,
                                                    reference = refValue_sampled,
                                                    scalingModel = scalingModel),
                   value_sc_trunc = ifelse(value_sc > 1, 1, value_sc)) %>%
-    dplyr::select(ICunitID, ICunitName, year, value_sc, value_sc_trunc)
+    dplyr::select(ICunitId, ICunitName, year, value_sc, value_sc_trunc)
   
   
   ## Collate output data in a list and return
   simData <- list(raw = simData_raw,
                   scaled_fixedRef = simData_scaled_fixedRef,
                   scaled_sampledRef = simData_scaled_sampledRef)
+  
+  ## List years and areas data was simulated for
+  sim_years <- unique(simData_raw$year)
+  sim_areas <- unique(simData_raw$ICunitName)
+  
+  message("Data simulated for:")
+  message(paste0(crayon::underline("Years:"), " ", paste0(sim_years, collapse = ", ")))
+  message(paste0(crayon::underline("Areas:"), " ", paste0(sim_areas, collapse = ", ")))
   
   return(simData)
 }
