@@ -1,0 +1,263 @@
+---
+title: "Nature Index: Forest ecosystem"
+author: "Chloé R. Nater"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(NIcalc)
+library(NIflex)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(paletteer)
+library(svglite)
+```
+
+The Nature Index (NI) is calculated as a weighted mean of a range of different indicators. 
+Each indicator is first scaled with respect to its reference value such that it takes on values between 0 and 1, where 0 corresponds to a species (group)/habitat type being extinct/completely lost, and 1 corresponds to an abundance of a species /group)/habitat type as we would expect it in an ecosystem with as little as possible human disturbance. In the case of semi-natural ecosystems, value 1 represents the indicator state in a well-managed ecosystem. 
+After scaling, each indicator is assigned a composite weight that is dependent on trophic group, relative area for which data are available, and key indicator status. In early versions of NI, ecosystem fidelity (given as % of the indicator distributed across different ecosystems) was also used for assigning weights; however, as of NI2020, this is no longer done as there is no reason to down-weigh an indicator in ecosystem A just because it also appears in ecosystem B. 
+NI for a given ecosystem is the calculated as a weighted average of all relevant indicators. 
+For more information on the Nature Index framework, please refer to the sources provided in Chapter XX: "Links and references". 
+
+In the following, I describe the workflow for calculating NI2025 for forest ecosystems. 
+
+The workflow is largely based on scripts developed for automating NI calculations for ecosystem condition accounts and collated in the `NIflex` package (https://github.com/NINAnor/NIflex) and contains the following steps: 
+
+- Retrieval of necessary data from NI database
+- Calculation of NI2025
+- Visualization of NI2025 as time-series plots (traditional and using density ridges) and maps
+- Local storage of results
+- Remote storage of results in NI database to be used for visualizations on the webpage
+
+
+## General setup
+
+There are a few variables that are used to control execution of parts of the code in this chapter. 
+We start off by defining these here: 
+
+```{r}
+## Years
+years <- c("2000", "2010", "2014", "2019", "2024")
+
+## Year for map plots
+mapYear <- max(years)
+
+## Missing value imputation
+NAImputation <- TRUE
+
+## Key indicator weighing
+KeyIndicators <- TRUE
+KeyWeight <- 0.5
+
+## Area weighing
+AreaWeights <- TRUE # Yes
+
+## Trophic weighing
+TrophicWeights <- TRUE # Yes
+
+## Norwegian indicator names
+norwegianNames <- TRUE
+
+## Output type
+OutputType <- "NatureIndex"
+
+## Nature Index ecosystem 
+Ecosystem <- c("Forest", "Skog")
+#Ecosystem <- c("Mountain", "Fjell")
+#Ecosystem <- c("Wetlands", "Våtmark")
+#Ecosystem <- c("OpenLowland", "Åpent lavland")
+#Ecosystem <- c("Freshwater", "Ferskvann")
+#Ecosystem <- c("Coast", "Kystvann")
+#Ecosystem <- c("Ocean", "Hav")
+
+EC_ecosystem <- NULL
+ecosystem_use <- Ecosystem[2]
+
+## Options for dropping indicators
+DropIndList <- NULL
+
+## Diagnostics imputation
+Diagnostics <- TRUE # Yes
+
+## Test run (10 vs. 1000 iterations in simulation)
+TestRun <- TRUE # Yes
+#TestRun <- FALSE # No
+
+## Shapefiles library path
+shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles"
+
+```
+
+Additionally, we will define and set a seed to ensure reproducibility of the simulations:
+```{r}
+mySeed <- 0
+set.seed(mySeed)
+```
+
+## Connect to the Nature Index Database
+
+To access and download indicator data, we need to retrieve a token from the NI database. 
+For that to work, we need access to our NI database access credentials; we retrieve those from environmental variables (if you have not saved them as environmental variables, you can find the code for doing that in chapter 0; alternatively, you can also manually set them here):
+
+```{r, eval = FALSE}
+NIdb_username <- Sys.getenv("NIdb_username")
+NIdb_password <- Sys.getenv("NIdb_password")
+```
+
+## Retrieve data and calculate NI2025
+
+```{r}
+#*******************#
+# INDEX CALCULATION #
+#*******************#
+
+## Assign indicator set
+if(OutputType %in% c("NatureIndex", "EcologicalCondition")){
+  indicators_use <- NULL
+}else{
+  indicators_use <- IndicatorSet
+}
+
+## Make list of indicators to drop
+dropInd <- selectDropIndicators(DropIndMode = DropIndMode,
+                                OutputType = OutputType,
+                                ecosystem = ifelse(OutputType %in% c("NatureIndex", "EcologicalCondition"), ecosystem_use, NULL),
+                                customList = DropIndList)
+
+## Calculate index for specified ecosystem/indicators
+CustomNI <- calculateCustomNI(ecosystem = ecosystem_use,
+                              indicators = indicators_use,
+                              theme = theme,
+                              dropInd = dropInd,
+                              username = NIdb_username,
+                              password = NIdb_password,
+                              KeyIndicators = KeyIndicators,
+                              KeyWeight = KeyWeight,
+                              AreaWeights = AreaWeights,
+                              TrophicWeights = TrophicWeights,
+                              NAImputation = NAImputation,
+                              years = years,
+                              OutputType = OutputType,
+                              funArguments = funArguments,
+                              Diagnostics = Diagnostics,
+                              TestRun = TestRun,
+                              norwegianNames = norwegianNames,
+                              saveSteps = TRUE)
+  
+Index <- CustomNI$CustomIndex
+
+
+## Combine index summary statistics with geospatial data
+if(OutputType %in% c("NatureIndex", "EcologicalCondition")){
+  CustomNI_map <- geomapNI(Index = CustomNI$CustomIndex, 
+                           year = mapYear, 
+                           OutputType = OutputType, 
+                           ecosystem = ecosystem_use,
+                           shapeLibraryPath = shapeLibraryPath)
+}
+
+if(OutputType == "ThematicIndex"){
+  CustomNI_map <- geomapNI(Index = CustomNI$CustomIndex, 
+                           year = mapYear, 
+                           OutputType = OutputType, 
+                           theme = theme,
+                           shapeLibraryPath = shapeLibraryPath)
+}
+
+if(OutputType == "CustomIndex"){
+  CustomNI_map <- geomapNI(Index = CustomNI$CustomIndex, 
+                           year = mapYear, 
+                           OutputType = OutputType, 
+                           awBSunit = funArguments$awBSunit,
+                           shapeLibraryPath = shapeLibraryPath)
+}
+
+
+```
+
+## Overview over indicator set
+
+
+## Visualizing results
+
+```{r}
+#*************#
+# INDEX PLOTS #
+#*************#
+
+
+## Plot time series
+
+# Standard
+plot(Index$wholeArea, main = "Custom index", cex = 1, lwd = 2, shade = TRUE)
+summary(Index$wholeArea)
+
+# Standard extended
+plotNI_StandardTS(Index = Index,
+                  addAverage = TRUE,
+                  truncateY = TRUE)
+
+plotNI_StandardTS(Index = Index,
+                  addAverage = TRUE,
+                  truncateY = FALSE)
+
+# Density ridge plot
+plotNI_DensityRidgeTS(Index = Index, 
+                      OutputType = OutputType, 
+                      ecosystem = ecosystem_use, 
+                      theme = theme,
+                      allAreas = FALSE, 
+                      selectedArea  = "wholeArea")
+
+plotNI_DensityRidgeTS(Index = Index, 
+                      OutputType = OutputType, 
+                      ecosystem = ecosystem_use, 
+                      theme = theme,
+                      allAreas = TRUE)
+
+## Plot map
+if(OutputType %in% c("NatureIndex", "EcologicalCondition")){
+  plotNI_Map(shp = CustomNI_map, 
+             year = mapYear, 
+             OutputType = OutputType, 
+             ecosystem = ecosystem_use,
+             plotMedian = TRUE, plotCI = TRUE, plotDisplacement = FALSE, 
+             interactiveMap = FALSE)
+}
+
+if(OutputType == "ThematicIndex"){
+  plotNI_Map(shp = CustomNI_map, 
+             year = mapYear, 
+             OutputType = OutputType, 
+             theme = theme,
+             plotMedian = TRUE, plotCI = TRUE, plotDisplacement = FALSE, 
+             interactiveMap = FALSE)
+}
+
+if(OutputType == "CustomIndex"){
+  plotNI_Map(shp = CustomNI_map, 
+             year = mapYear, 
+             OutputType = OutputType, 
+             plotMedian = TRUE, plotCI = TRUE, plotDisplacement = FALSE, 
+             interactiveMap = FALSE)
+}
+
+
+## Plot indicator weights
+NIcalc::plotWeights(Index$wholeArea$'2024')
+NIcalc::plotWeights(Index$wholeArea$'2024', allBars = TRUE)
+
+NIcalc::plotWeights(Index$wholeArea$'2024', group = "troph")
+
+
+
+NIcalc::summaryWeights(Index$wholeArea)
+
+```
+
+## Storing numerical results locally
+
+## Sending numerical results table to the NI database
