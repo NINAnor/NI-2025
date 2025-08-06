@@ -190,71 +190,72 @@ For now, we will do this for the following parts of the results:
 - Statistical summary of calculated index distributions
 
 ```{r}
-if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) & !forceReRun){
-  
-  ## Make target folder (if non-existent)
-  saveFolder <- paste0("results_", Ecosystem[1])
-  if(!dir.exists(saveFolder)){
-    dir.create(saveFolder)
-  }
-  
-  ## Save indicator list
-  indicatorList <- CustomNI$CustomIndex$wholeArea$`2024`$indicatorData %>%
-    dplyr::select(id, name, keyElement, functionalGroup, scalingModel)
-  
-  readr::write_excel_csv(indicatorList, file = paste0(saveFolder, "/indicatorList.csv"))
-  
-  ## Save summarised indicator weights
-  indicatorWeights <- data.frame(
-    name = rownames(NIcalc::summaryWeights(CustomNI$CustomIndex$wholeArea)),
-    weight = NIcalc::summaryWeights(CustomNI$CustomIndex$wholeArea)[,2],
-    row.names = NULL) %>%
-    dplyr::mutate(weigth_percent = round(weight*100, digits = 2))
-  
-  readr::write_excel_csv(indicatorWeights, file = paste0(saveFolder, "/indicatorWeights.csv"))
-  
-  ## Make and save statistical summary of calculated index distributions
-  indexSummary <- data.frame()
-  
-  for(a in 1:length(CustomNI$CustomIndex)){
-    for(t in 1:length(years)){
-      
-      indexSum_a_t <- data.frame(
-        Area = names(CustomNI$CustomIndex)[a],
-        Year = years[t],
-        value = CustomNI$CustomIndex[[a]][[t]]$index) %>%
-        dplyr::group_by(Area, Year) %>%
-        dplyr::summarise(mean = mean(value),
-                         median = median(value),
-                         sd = sd(value),
-                         rel_sd = sd/mean,
-                         q025 = quantile(value, probs = 0.025),
-                         q05 = quantile(value, probs = 0.05),
-                         q25 = quantile(value, probs = 0.25),
-                         q75 = quantile(value, probs = 0.75),
-                         q95 = quantile(value, probs = 0.95),
-                         q975 = quantile(value, probs = 0.975),
-                         .groups = "keep") %>%
-        dplyr::ungroup()
-      
-      indexSum_a_t[, 3:12] <- round(indexSum_a_t[, 3:12], digits = 3)
-      
-      indexSummary <- indexSummary %>%
-        dplyr::bind_rows(indexSum_a_t)
-    }
-  }
-  
-  indexSummary <- indexSummary %>%
-    dplyr::mutate(Area = dplyr::case_when(Area == "wholeArea" ~ "All Norway",
-                                          Area == "E" ~ "Eastern Norway",
-                                          Area == "S" ~ "Southern Norway",
-                                          Area == "W" ~ "Western Norway",
-                                          Area == "N" ~ "Northern Norway",
-                                          Area == "C" ~ "Central Norway",
-                                          TRUE ~ Area))
-  
-  readr::write_excel_csv(indexSummary, file = paste0(saveFolder, "/indexStatSummary.csv"))
+if(!exists("CustomNI")){
+  CustomNI <- readRDS(paste0("NI2025_Data_", Ecosystem[1], ".rds"))
 }
+
+## Make target folder (if non-existent)
+saveFolder <- paste0("results_", Ecosystem[1])
+if(!dir.exists(saveFolder)){
+  dir.create(saveFolder)
+}
+
+## Save indicator list
+indicatorList <- CustomNI$CustomIndex$wholeArea$`2024`$indicatorData %>%
+  dplyr::select(id, name, keyElement, functionalGroup, scalingModel)
+
+readr::write_excel_csv(indicatorList, file = paste0(saveFolder, "/indicatorList.csv"))
+
+## Save summarised indicator weights
+indicatorWeights <- data.frame(
+  name = rownames(NIcalc::summaryWeights(CustomNI$CustomIndex$wholeArea)),
+  weight = NIcalc::summaryWeights(CustomNI$CustomIndex$wholeArea)[,2],
+  row.names = NULL) %>%
+  dplyr::mutate(weigth_percent = round(weight*100, digits = 2))
+
+readr::write_excel_csv(indicatorWeights, file = paste0(saveFolder, "/indicatorWeights.csv"))
+
+## Make and save statistical summary of calculated index distributions
+indexSummary <- data.frame()
+
+for(a in 1:length(CustomNI$CustomIndex)){
+  for(t in 1:length(years)){
+    
+    indexSum_a_t <- data.frame(
+      Area = names(CustomNI$CustomIndex)[a],
+      Year = years[t],
+      value = CustomNI$CustomIndex[[a]][[t]]$index) %>%
+      dplyr::group_by(Area, Year) %>%
+      dplyr::summarise(mean = mean(value),
+                       median = median(value),
+                       sd = sd(value),
+                       rel_sd = sd/mean,
+                       q025 = quantile(value, probs = 0.025),
+                       q05 = quantile(value, probs = 0.05),
+                       q25 = quantile(value, probs = 0.25),
+                       q75 = quantile(value, probs = 0.75),
+                       q95 = quantile(value, probs = 0.95),
+                       q975 = quantile(value, probs = 0.975),
+                       .groups = "keep") %>%
+      dplyr::ungroup()
+    
+    indexSum_a_t[, 3:12] <- round(indexSum_a_t[, 3:12], digits = 3)
+    
+    indexSummary <- indexSummary %>%
+      dplyr::bind_rows(indexSum_a_t)
+  }
+}
+
+indexSummary <- indexSummary %>%
+  dplyr::mutate(Area = dplyr::case_when(Area == "wholeArea" ~ "All Norway",
+                                        Area == "E" ~ "Eastern Norway",
+                                        Area == "S" ~ "Southern Norway",
+                                        Area == "W" ~ "Western Norway",
+                                        Area == "N" ~ "Northern Norway",
+                                        Area == "C" ~ "Central Norway",
+                                        TRUE ~ Area))
+
+readr::write_excel_csv(indexSummary, file = paste0(saveFolder, "/indexStatSummary.csv"))
 ```
 
 Note that all steps related to summarising and saving numerical data are only required if we have just re-run calculations. 
