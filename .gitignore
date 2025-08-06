@@ -71,3 +71,21 @@ data/IndicatorData_StatSummaries
 *.pdf
 *.svg
 
+# Results directories with contents
+results_Forest
+results_Mountain
+results_Wetlands
+results_OpenLowland
+results_Freshwater
+results_Coast
+results_Ocean
+
+# Results files
+stepData.rds
+NI2025_Data_Forest.rds
+NI2025_Data_Mountain.rds
+NI2025_Data_Wetlands.rds
+NI2025_Data_OpenLowland.rds
+NI2025_Data_Freshwater.rds
+NI2025_Data_Coast.rds
+NI2025_Data_Ocean.rds
