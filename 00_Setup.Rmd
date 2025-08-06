@@ -26,7 +26,7 @@ Neither of these packages are on CRAN; consequently, they need to be installed d
 Additionally, please note that building vignettes requires an LaTeX installation; if you get an error related to missing LaTeX installation, you can install TinyTeX (https://yihui.org/tinytex/) as follows: 
 
 ```{r, eval = FALSE}
-install.packaged("tinytex")
+install.packages("tinytex")
 tinytex::install_tinytex()
 ```
 
