@@ -24,13 +24,21 @@ For more information on the Nature Index framework, please refer to the sources 
 
 In the following, I describe the workflow for calculating NI2025 for forest ecosystems. 
 
-The workflow is largely based on scripts developed for automating NI calculations for ecosystem condition accounts and collated in the `NIflex` package (https://github.com/NINAnor/NIflex) and contains the following steps: 
+The workflow is largely based on scripts developed for automating NI calculations for ecosystem condition accounts and collated in the "NIflex" package (https://github.com/NINAnor/NIflex). Most operations have previously been coded in the "NIcalc" package (https://github.com/NINAnor/NIcalc). The workflow here contains the following steps: 
 
 - Retrieval of necessary data from NI database
 - Calculation of NI2025
 - Visualization of NI2025 as time-series plots (traditional and using density ridges) and maps
 - Local storage of results
 - Remote storage of results in NI database to be used for visualizations on the webpage
+
+
+### A note on reference value uncertainty
+Reference values can be -- and have been -- entered into the NI database either with or without associated uncertainty. Most reference values have been set early on in the NI work (period 2010-2014) and not changed since; a few have been updated or re-calibrated since. The approaches for setting reference values across the indicator set have been extremely variable, and neither particularly structured nor harmonized. This is one of the reasons why reference value uncertainty has not been included in previous iterations of NI (NI2010, NI2015, NI2020). 
+
+Investigating the effects of including reference value uncertainty on NI calculations is not part of the commission for NI2025, either. As such, also NI2025 is calculating without accounting for reference value uncertainty. 
+
+This should, however, be considered for future work, ideally in combination with a re-assessment and structured and standardized update of reference values across the indicator set. Fortunately, the option for using uncertain reference values in practice is already coded into "NIcalc"; specifically, within `NIcalc::calculate_Index()` there is a function called `setCalculationParameters()`, and the argument `stochastic` of that function has to be changed from "obervations" to "both" to include uncertainty in both yearly indicator values and reference values. 
 
 
 ## General setup
