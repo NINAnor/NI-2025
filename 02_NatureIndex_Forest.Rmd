@@ -95,11 +95,12 @@ DropIndList <- NULL
 Diagnostics <- TRUE # Yes
 
 ## Test run (10 vs. 1000 iterations in simulation)
-TestRun <- TRUE # Yes
-#TestRun <- FALSE # No
+#TestRun <- TRUE # Yes
+TestRun <- FALSE # No
 
 ## Shapefiles library path
-shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles"
+#shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
+shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
 
 ```
 

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Chloé R. Nater" />
 
-<meta name="date" content="2025-07-30" />
+<meta name="date" content="2025-08-07" />
 
 <title>Setup and preparations</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">Setup and preparations</h1>
 <h4 class="author">Chloé R. Nater</h4>
-<h4 class="date">2025-07-30</h4>
+<h4 class="date">2025-08-07</h4>
 
 </div>
 
@@ -382,7 +382,7 @@ installed directly from GitHub. We will use
 this. Additionally, please note that building vignettes requires an
 LaTeX installation; if you get an error related to missing LaTeX
 installation, you can install TinyTeX (<a href="https://yihui.org/tinytex/" class="uri">https://yihui.org/tinytex/</a>) as follows:</p>
-<pre class="r"><code>install.packaged(&quot;tinytex&quot;)
+<pre class="r"><code>install.packages(&quot;tinytex&quot;)
 tinytex::install_tinytex()</code></pre>
 <p>Then proceed to installing “NIcalc” and “NIflex” (you may have to
 install/update dependencies as well):</p>
@@ -391,6 +391,17 @@ remotes::install_github(repo = &quot;NINAnor/NIcalc&quot;, build_vignettes = TRU
 
 ## Install NIflex
 remotes::install_github(repo = &quot;NINAnor/NIflex&quot;, build_vignettes = TRUE)</code></pre>
+<p>In addition, there are a few CRAN packages that are required. These
+can be installed using the following code:</p>
+<pre class="r"><code>pkgList &lt;- c(&quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;ggridges&quot;, &quot;magrittr&quot;, &quot;paletteer&quot;, &quot;pals&quot;, &quot;readr&quot;, &quot;svglite&quot;, &quot;usethis&quot;)
+
+install.packages(pkgList)</code></pre>
+<pre><code>## Installing packages into &#39;/home/NINA.NO/chloe.nater/R/x86_64-pc-linux-gnu-library/4.0&#39;
+## (as &#39;lib&#39; is unspecified)</code></pre>
+<pre><code>## Warning in install.packages(pkgList): installation of package &#39;readr&#39; had
+## non-zero exit status</code></pre>
+<pre><code>## Warning in install.packages(pkgList): installation of package &#39;dplyr&#39; had
+## non-zero exit status</code></pre>
 </div>
 <div id="access-to-the-nature-index-database" class="section level2">
 <h2>Access to the Nature Index Database</h2>
@@ -406,9 +417,12 @@ has not been scripted to work directly from R yet and is currently
 handled manually by the database administrator (subject to changes).</p>
 <p>Since we will have to connect to the database several times
 throughout the different chapters, we will store our login credentials
-as local environmental variables in R using the following code:</p>
-<pre class="r"><code>Sys.setenv(NIdb_username = &quot;your_username&quot;)
-Sys.setenv(NIdb_password = &quot;your_passowrd&quot;)</code></pre>
+as local environmental variables in the project’s .Renviron filw using
+the following code:</p>
+<pre class="r"><code>usethis::edit_r_environ(scope = &quot;project&quot;)</code></pre>
+<p>After executing the code line above, you’ll have to manually edit the
+.Renviron file by writing: <code>NIdb_username=&quot;NIdb_username&quot;</code>
+<code>NIdb_password=&quot;NIdb_password&quot;</code></p>
 <p>If you have forgotten your password, you can reset it via the
 “Forgotten password?” link on the login page of <a href="https://naturindeks.nina.no/" class="uri">https://naturindeks.nina.no/</a>. If you are unsure about
 your username, or want to request (admin) access, contact the NI core
