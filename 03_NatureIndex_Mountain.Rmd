@@ -133,7 +133,7 @@ The list of indicators that is used to calculate NI for specific ecosystems is r
 
 ```{r, message = FALSE}
 
-if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) & !forceReRun){
+if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
   
   ## Assign indicator set
   indicators_use <- NULL
@@ -172,7 +172,7 @@ if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) & !forceReRun){
 `NIflex::calculateCustomIndex()` automatically saves the results into the working directory as "CustomIndex_Data.rds". Since we are now handling multiple indices (NI for all seven ecosystems, as well as a couple of thematic indices), we want to make sure they all have logical and individual file names. We therefore rename the output file: 
 
 ```{r}
-if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) & !forceReRun){
+if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
   
   file.rename(from = "CustomIndex_Data.rds",
               to = paste0("NI2025_Data_", Ecosystem[1], ".rds"))
