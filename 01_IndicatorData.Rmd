@@ -219,7 +219,39 @@ for(i in 1:nrow(indicatorList)){
 ```
 
 ## Calculating indicator indices
-TBA
+
+Traditionally, time-series of area-aggregated indicator values have been published for a selection of indicators on the NI webpage. These are referred to as "indicator indices" and are calculated using the same framework as the NI for different ecosystems (via `NIcalc::calculateIndex()`). We calculate these here using the wrapper function `calculate_IndicatorIndex()`. 
+The source code underlying this function originates from scripts from NI2020 stored on NINA's internal servers under "R:/Prosjekter/12892000_naturindeks_rammeverk_database_og_innsynslosning/Naturindeks 2020/Beregninger/Indikatorer/". 
+Back then, indicator indices were calculated on a per-ecosystem basis, likely to circumvent the issue that no alternative had been coded into "NIcalc" yet. In `calculate_IndicatorIndex()` here, we have made adjustments that allow calculating indicator indices taking into account all relevant ecosystems; in practice, this means that area weights are determined by the extent of area within each spatial unit covered by any of the ecosystems relevant to the indicator (as opposed to just one selected one). It's still possible to calculate indicator indices specific to single ecosystems too by setting `weigh_byEcosystem = TRUE` and specifying which ecosystem in the call to the function. However, for the purpose of visualizing indicator data, we will work with indicator indices calculated for all relevant ecosystems. 
+
+Below, we loop over all indicators to calculate indicator indices, and save the results into a list for further use in R and as files into a designated folder: 
+
+```{r}
+## Create folder for saving results
+if(!dir.exists("results_Indicators")){
+  dir.create("results_Indicators")
+}
+
+## Set up list for storing results
+indIndex <- list()
+
+## Calculate indicator indices and save results, per indicator
+for(i in 1:nrow(indicatorList)){
+  
+  indIndex_i <- calculate_IndicatorIndex(dataSet = indicatorData[[i]],
+                                     testRun = TRUE,
+                                     NAimputation = FALSE,
+                                     weigh_byEcosystem = FALSE,
+                                     truncAtRef = TRUE)
+  indIndex[[i]] <- indIndex_i
+  
+  readr::write_excel_csv(indIndex_i$summary, file = paste0("results_Indicators/indIndex_Summary_id_", indicatorList$id[i], ".csv"))
+  
+  saveRDS(indIndex_i, paste0("results_Indicators/indIndex_id_", indicatorList$id[i], ".rds"))
+}
+
+
+```
 
 
 ## Visualizing raw and scaled indicator data
