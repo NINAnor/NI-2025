@@ -217,7 +217,7 @@ calculate_IndicatorIndex <- function(dataSet,
     dimnames(result[[j]]) <- list(years, c(xx, "Imputations"))
   }
   
-  # Reformat and return results
+  # Reformat results
   result_sum <- data.frame()
   for(j in 1:length(result)){
     sum_j <- result[[j]] %>%
@@ -230,8 +230,14 @@ calculate_IndicatorIndex <- function(dataSet,
     
     result_sum <- rbind(result_sum, sum_j)
   }
+
+  # Drop NAs (coded as 0)
+  result_sum <- result_sum %>%
+    dplyr::mutate(flagNA = ifelse(median == 0 & q025 == 0 & q975 == 0 & displacement == 0, TRUE, FALSE)) %>%
+    dplyr::filter(!flagNA) %>%
+    dplyr::select(-flagNA)
   
-  
+  # Collate and return results
   out.list <- list(
     indicator = indicatorName,
     dataYears = dataYears,
