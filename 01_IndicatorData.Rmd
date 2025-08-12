@@ -62,6 +62,12 @@ NIdb_username <- Sys.getenv("NIdb_username")
 NIdb_password <- Sys.getenv("NIdb_password")
 ```
 
+After retrieving login credentials, we can open a connection / request a token: 
+```{r, eval = FALSE}
+NIcalc::getToken(username = NIdb_username,  
+                 password = NIdb_password,
+                 url = "https://www8.nina.no/NaturindeksNiCalc")
+```
 ##  List indicators and retrieve data
 
 If the person running this script has full access to the database (admin rights), they should be able to access the complete list of indicators by directly pulling it from the database using `NIcalc::getIndicators()`:
@@ -227,6 +233,9 @@ Back then, indicator indices were calculated on a per-ecosystem basis, likely to
 Below, we loop over all indicators to calculate indicator indices, and save the results into a list for further use in R and as files into a designated folder: 
 
 ```{r}
+## Source function
+source("R/calculate_IndicatorIndex.R")
+
 ## Create folder for saving results
 if(!dir.exists("results_Indicators")){
   dir.create("results_Indicators")
