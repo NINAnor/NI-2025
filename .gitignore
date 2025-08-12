@@ -79,6 +79,7 @@ results_OpenLowland
 results_Freshwater
 results_Coast
 results_Ocean
+results_Indicators
 
 # Results files
 stepData.rds
