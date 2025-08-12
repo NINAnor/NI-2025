@@ -262,6 +262,7 @@ for(i in 1:nrow(indicatorList)){
 
 ```
 
+Note that we are calculating indicator indices without imputations (`NAimputation = FALSE`). This is because imputation using the "mice" algorithm will not work very well for many indicators due to limited data and high collinearity. It works for indices combining many indicators because that translates to more (variable) data. Without imputations, indicator indices for selected years represent area-weighted means of values for the areas with available data in the specified year. Since different areas may have data available for different years, changes in calculated indicator indices over time have to be interpreted with caution as changes may indicate a) changes in average indicator values and/or b) changes in composition of areas with values. We assist this visually by not "connecting" the indicator index estimates across years below. 
 
 ## Visualizing raw and scaled indicator data
 
@@ -276,8 +277,6 @@ There are two types of visualizations of indicator data that we are aiming for:
 2. Year-specific maps of a) medians and b) uncertainty as relative standard deviation
 
 Both visualizations will be done for the unscaled (raw) and scaled indicator values. 
-The goal for the Nature index database is that those visualizations 
-For 1., we ultimately also want to include a line for the area-aggregated "indicator index". Calculation thereof is not included in the code yet, but will be added soon.
 
 Below, we present the corresponding visualizations in indicator-specific sub-chapters. There are a few things to note: 
 
@@ -302,8 +301,13 @@ filename_scaled <- dplyr::case_when(
   uncertainRefValue & !truncAfterSummary ~ "sampledRef_truncPreSum",
 )
 
-## Set time-series plot color for indicators with > 20 areas
+## Set fixed plotting colors
+
+# Time-series plot color for indicators with > 20 areas
 plot.col <- "#D37295FF"
+
+# Time-series plot color for indicator indices
+plot.col2 <- "#006964"
 
 ## Make lists to store plots for each indicator
 TS_raw <- list()
@@ -338,8 +342,12 @@ for(i in 1:nrow(indicatorList)){
   data_scaled <- readRDS(paste0("data/IndicatorData_StatSummaries/statSummary_id_", ind_id, "_scaled_", filename_scaled, ".rds")) %>%
     dplyr::mutate(year_t = as.integer(year))
   
+  data_indIdx <- readRDS(paste0("results_Indicators/indIndex_id_", ind_id, ".rds"))$summary %>%
+    dplyr::filter(indexArea == "wholeArea" & year_t %in% ind_focalYears) %>%
+    dplyr::mutate(year_t = as.integer(year_t))
+  
   ## Truncate scaled values (if necessary)
-  data_rows <- c("mean", "median", "q025", "q05", "q25", "q75", "q90", "q975") 
+  data_rows <- c("mean", "median", "q025", "q05", "q25", "q75", "q95", "q975") 
   
   data_scaled <- data_scaled %>%
     dplyr::mutate(dplyr::across(.cols = all_of(data_rows), ~ ifelse(. > 1, 1, .)))
@@ -398,8 +406,10 @@ for(i in 1:nrow(indicatorList)){
       geom_point(aes(y = median, color = ICunitName)) + 
       geom_errorbar(aes(ymin = q025, ymax = q975, color = ICunitName), width = 0.5, alpha = 0.25) + 
       geom_line(aes(y = median, color = ICunitName)) + 
+      geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
+      geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
       ylim(0, 1) + 
-      xlab("Year") + ylab("Indicator value (unscaled)") + 
+      xlab("Year") + ylab("Indicator value (scaled)") + 
       ggtitle(ind_name) +
       paletteer::scale_color_paletteer_d(palette = "ggthemes::Tableau_20", name = "Area") + 
       scale_x_continuous(breaks = plot.yearH) + 
@@ -412,8 +422,10 @@ for(i in 1:nrow(indicatorList)){
       geom_point(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) + 
       geom_errorbar(aes(ymin = q025, ymax = q975, group = ICunitName), width = 0.5, color = plot.col, alpha = 0.1) + 
       geom_line(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) +
+      geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
+      geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
       ylim(0, 1) + 
-      xlab("Year") + ylab("Indicator value (unscaled)") + 
+      xlab("Year") + ylab("Indicator value (scaled)") + 
       ggtitle(ind_name) +
       scale_x_continuous(breaks = plot.yearH) + 
       theme_bw() + 
