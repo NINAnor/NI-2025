@@ -7,6 +7,7 @@
 #' If FALSE (default), uses the sum of ecosystems for which the indicator has fidelity > 0 as the basis for area weights.
 #' @param ecosystem character string specifying which ecosystem to aggregate for.
 #' Has to be provided if `weigh_byEcosystem = TRUE` and must be one of the following: "Skog", "Fjell", "Våtmark", "Åpent lavland", "Ferskvann", "Kystvann", "Hav".
+#' @param include_subAreas logical. If TRUE (default) calculates indicator index for all of Norway and for represented sub-regions. If FALSE, only calculates for all of Norway.
 #' @param truncAtRef logical. Whether indicator values should be truncated at the reference level before aggregation.
 #'
 #' @returns a list containing indicator name, years with data used in calculations, ecosystem aggregated for, and the calculated indicator index both as a summary table and complete output from `NIcalc::calculateIndex()`.
@@ -19,6 +20,7 @@ calculate_IndicatorIndex <- function(dataSet,
                                      NAimputation,
                                      weigh_byEcosystem = FALSE,
                                      ecosystem = NULL,
+                                     include_subAreas = TRUE,
                                      truncAtRef){
   
   all_ES <- c("Skog", "Fjell", "Våtmark", "Åpent lavland", 
@@ -47,7 +49,7 @@ calculate_IndicatorIndex <- function(dataSet,
   # Extract IC units (and drop NAs if present)
   ICunits <- dataSet$ICunits
   
-  if(any(dim(ICunit) > 1)){
+  if(any(dim(ICunits) > 1)){
     ICunits <- ICunits[!is.na(ICunits),]
     ICunits <- as.matrix(ICunits, ncol = 1)
     colnames(ICunits) <- indicatorName
@@ -75,7 +77,7 @@ calculate_IndicatorIndex <- function(dataSet,
   }
   
   firstYear_Id <- min(which(not_NA))
-  firstYear <- names(dataSet_focal$indicatorValues)[firstYear_Id]
+  firstYear <- names(dataSet$indicatorValues)[firstYear_Id]
   
   # Drop years prior to first year with data
   dataSet_focal <- dataSet
@@ -124,6 +126,11 @@ calculate_IndicatorIndex <- function(dataSet,
   NIunits <- NIunits[, ta.med]
   
   NIunits <- NIunits[BSunits$name, ]
+  
+  # Optional: drop sub-area NI units to calculate only for whole of Norway/all areas
+  if(!include_subAreas){
+    NIunits <- NIunits[, 1, drop = FALSE]
+  }
   
   # Adjust ICunits
   ICunits <- ICunits[BSunits$name, ]
