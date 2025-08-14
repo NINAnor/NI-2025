@@ -307,7 +307,7 @@ filename_scaled <- dplyr::case_when(
 plot.col <- "#D37295FF"
 
 # Time-series plot color for indicator indices
-plot.col2 <- "#006964"
+plot.col2 <- "#0B2120"
 
 ## Make lists to store plots for each indicator
 TS_raw <- list()
