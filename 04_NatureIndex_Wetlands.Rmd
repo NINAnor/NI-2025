@@ -1,8 +1,10 @@
 ---
-title: "Nature Index: Wetlands ecosystem"
+title: 'Nature Index: Wetlands ecosystem'
 author: "Chloé R. Nater"
-output: html_document
 date: "`r Sys.Date()`"
+output:
+  html_document:
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
