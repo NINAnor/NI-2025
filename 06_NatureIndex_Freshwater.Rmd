@@ -99,8 +99,8 @@ Diagnostics <- TRUE # Yes
 TestRun <- FALSE # No
 
 ## Shapefiles library path
-#shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
-shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
+shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
+#shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
 
 ```
 
@@ -511,3 +511,203 @@ for(t in 1:length(years)){
 ```
 
 ## Sending numerical results table to the NI database
+
+## Addendum: thematic indices
+
+As of NI2025, all previously published thematic indices have been discontinued. 
+We have, however, had a request to provide the thematic indices for "Forsuring ferskvann" (= freshwater acidification) and "Eutrofiering ferskvann" (= freshwater eutrophication) as tools to aid with interpretation of NI for freshwater ecosystems. 
+
+Routines for calculating thematic indices have been streamlined within "NIflex", and we'll refer to package documentation for details on the implementation. 
+
+Below, we calculate and then visualize the two requested thematic indices. 
+
+### Freshwater acidification
+
+```{r, echo = FALSE}
+## Key indicator weighing
+KeyIndicators <- FALSE
+
+## Output type
+OutputType <- "ThematicIndex"
+
+## Thematic index
+theme <- "Acidification"
+IndicatorSet <- listIndicators_thematicIndex(theme = theme)
+
+
+## Set function arguments (for thematic and custom indices)
+funArguments <- listFunctionArguments(OutputType = OutputType,
+                                      theme = theme)
+
+## Test run (10 vs. 1000 iterations in simulation)
+#TestRun <- TRUE # Yes
+TestRun <- FALSE # No
+```
+
+```{r, echo = FALSE}
+## Set ecosystem to null (thematic indices)
+ecosystem_use <- NULL
+
+## Assign indicator set
+indicators_use <- IndicatorSet
+
+## Make list of indicators to drop
+dropInd <- selectDropIndicators(DropIndMode = DropIndMode,
+                                OutputType = OutputType,
+                                ecosystem = ifelse(OutputType %in% c("NatureIndex", "EcologicalCondition"), ecosystem_use, NULL),
+                                customList = DropIndList)
+
+## Calculate index for specified ecosystem/indicators
+theme_acidifcation <- calculateCustomNI(ecosystem = ecosystem_use,
+                              indicators = indicators_use,
+                              theme = theme,
+                              dropInd = dropInd,
+                              username = NIdb_username,
+                              password = NIdb_password,
+                              KeyIndicators = KeyIndicators,
+                              KeyWeight = KeyWeight,
+                              AreaWeights = AreaWeights,
+                              TrophicWeights = TrophicWeights,
+                              NAImputation = NAImputation,
+                              years = years,
+                              OutputType = OutputType,
+                              funArguments = funArguments,
+                              Diagnostics = Diagnostics,
+                              TestRun = TestRun,
+                              norwegianNames = norwegianNames,
+                              saveSteps = TRUE)
+
+## Save output
+file.rename(from = "CustomIndex_Data.rds",
+            to = "NI2025_Data_Freshwater_themeAcidification.rds")
+```
+
+```{r, echo = FALSE}
+theme_acidification <- readRDS("NI2025_Data_Freshwater_themeAcidification.rds")
+```
+
+The following table shows the indicators that are part of the thematic index for freshwater acidification: 
+
+```{r}
+knitr::kable(theme_acidification$importData$indicators,
+             caption = "List of indicators included in thematic index for freshwater acidification. id and name are consistent with use in the NI database. Indicators with keyElement = TRUE are treated as key indicators (nøkkelindikatorer) and assigned extra weight. Functional group also affects the weight attributed to indicators. Scaling model = Low means that indicator values > reference are considered good, while scaling model Max assumes that the reference is a maximum threshold, and values exceeding it are bad.")
+```
+
+The indicator weights are shown below. 
+
+```{r, echo = FALSE}
+NIcalc::plotWeights(theme_acidifcation$CustomIndex$wholeArea$`2024`,
+                    main = "Freshwater acidification",
+                    keycol = "grey", barcol = "grey")
+```
+The thematic index has developed over time as follows: 
+
+```{r, warning = FALSE, message = FALSE}
+NIflex::plotNI_StandardTS(Index = theme_acidifcation$CustomIndex,
+                          plotTitle = "Freshwater acidification",
+                          addAverage = TRUE,
+                          truncateY = TRUE)
+```
+The complete indicator distributions are visualized next:
+```{r, warning = FALSE, message = FALSE}
+NIflex::plotNI_DensityRidgeTS(Index = Index, 
+                                         OutputType = OutputType, 
+                                         ecosystem = "Ferskvann", 
+                                         theme = theme,
+                                         allAreas = TRUE)
+```
+### Freshwater eutrophication
+
+```{r, echo = FALSE}
+## Key indicator weighing
+KeyIndicators <- FALSE
+
+## Output type
+OutputType <- "ThematicIndex"
+
+## Thematic index
+theme <- "Eutrophication"
+IndicatorSet <- listIndicators_thematicIndex(theme = theme)
+
+## Set function arguments (for thematic and custom indices)
+funArguments <- listFunctionArguments(OutputType = OutputType,
+                                      theme = theme)
+
+## Test run (10 vs. 1000 iterations in simulation)
+TestRun <- TRUE # Yes
+#TestRun <- FALSE # No
+```
+
+```{r, echo = FALSE}
+## Set ecosystem to null (thematic indices)
+ecosystem_use <- NULL
+
+## Assign indicator set
+indicators_use <- IndicatorSet
+
+## Make list of indicators to drop
+dropInd <- selectDropIndicators(DropIndMode = DropIndMode,
+                                OutputType = OutputType,
+                                ecosystem = ifelse(OutputType %in% c("NatureIndex", "EcologicalCondition"), ecosystem_use, NULL),
+                                customList = DropIndList)
+
+## Calculate index for specified ecosystem/indicators
+theme_eutrophication <- calculateCustomNI(ecosystem = ecosystem_use,
+                                          indicators = indicators_use,
+                                          theme = theme,
+                                          dropInd = dropInd,
+                                          username = NIdb_username,
+                                          password = NIdb_password,
+                                          KeyIndicators = KeyIndicators,
+                                          KeyWeight = KeyWeight,
+                                          AreaWeights = AreaWeights,
+                                          TrophicWeights = TrophicWeights,
+                                          NAImputation = NAImputation,
+                                          years = years,
+                                          OutputType = OutputType,
+                                          funArguments = funArguments,
+                                          Diagnostics = Diagnostics,
+                                          TestRun = TestRun,
+                                          norwegianNames = norwegianNames,
+                                          saveSteps = TRUE)
+
+## Save output
+file.rename(from = "CustomIndex_Data.rds",
+            to = "NI2025_Data_Freshwater_themeEutrophication.rds")
+```
+
+```{r, echo = FALSE}
+theme_eutrophication <- readRDS("NI2025_Data_Freshwater_themeEutrophication.rds")
+```
+
+The following table shows the indicators that are part of the thematic index for freshwater eutrophication: 
+
+```{r}
+knitr::kable(theme_eutrophication$importData$indicators,
+             caption = "List of indicators included in thematic index for freshwater eutrophication. id and name are consistent with use in the NI database. Indicators with keyElement = TRUE are treated as key indicators (nøkkelindikatorer) and assigned extra weight. Functional group also affects the weight attributed to indicators. Scaling model = Low means that indicator values > reference are considered good, while scaling model Max assumes that the reference is a maximum threshold, and values exceeding it are bad.")
+```
+
+The indicator weights are shown below. 
+
+```{r, echo = FALSE}
+NIcalc::plotWeights(theme_acidifcation$CustomIndex$wholeArea$`2024`,
+                    main = "Freshwater eutrophication",
+                    keycol = "grey", barcol = "grey")
+```
+The thematic index has developed over time as follows: 
+
+```{r, warning = FALSE, message = FALSE}
+NIflex::plotNI_StandardTS(Index = theme_acidifcation$CustomIndex,
+                          plotTitle = "Freshwater eutrophication",
+                          addAverage = TRUE,
+                          truncateY = TRUE)
+```
+The complete indicator distributions are visualized next:
+
+```{r, warning = FALSE, message = FALSE}
+NIflex::plotNI_DensityRidgeTS(Index = Index, 
+                                         OutputType = OutputType, 
+                                         ecosystem = "Ferskvann", 
+                                         theme = theme,
+                                         allAreas = TRUE)
+```
