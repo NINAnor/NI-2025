@@ -232,7 +232,7 @@ Back then, indicator indices were calculated on a per-ecosystem basis, likely to
 
 Below, we loop over all indicators to calculate indicator indices, and save the results into a list for further use in R and as files into a designated folder: 
 
-```{r}
+```{r, eval = FALSE}
 ## Source function
 source("R/calculate_IndicatorIndex.R")
 
@@ -248,7 +248,7 @@ indIndex <- list()
 for(i in 1:nrow(indicatorList)){
   
   indIndex_i <- calculate_IndicatorIndex(dataSet = indicatorData[[i]],
-                                     testRun = TRUE,
+                                     testRun = FALSE,
                                      NAimputation = FALSE,
                                      weigh_byEcosystem = FALSE,
                                      truncAtRef = TRUE)
@@ -268,7 +268,7 @@ Note that we are calculating indicator indices without imputations (`NAimputatio
 
 For the remainder of this chapter, we will work with one indicator at a time and read in the respective simulated datasets anew. This means we can remove the large objects containing data for all indicators simultaneously from the workspace:
 ```{r, warning = FALSE}
-rm(simData, indicatorData, indicatorImport)
+rm(simData, indicatorData, indicatorImport, indIndex)
 ```
 
 There are two types of visualizations of indicator data that we are aiming for:
@@ -287,7 +287,7 @@ Below, we present the corresponding visualizations in indicator-specific sub-cha
 - Visualizations of the entire value distributions (see under 5.1. here: https://ninanor.github.io/NIviz/other-figures.html) will not be done for individual indicators (only for the aggregated NI for the different ecosystems).
 
 First, we set up directories, determine which scaled values file to use, define a plot color to use in cases where we have time series for many areas, and set up lists to store the plots in R:
-```{r}
+```{r, eval = FALSE}
 ## Set up folder for plots (if not present already)
 if(!dir.exists("plots")){
   dir.create("plots")
@@ -312,13 +312,13 @@ plot.col2 <- "#0B2120"
 ## Make lists to store plots for each indicator
 TS_raw <- list()
 TS_scaled <- list()
-MAP_raw <- list()
-MAP_scaled <- list()
+#MAP_raw <- list()
+#MAP_scaled <- list()
 
 ```
 
-Then, we proceed to plot time series and maps: 
-```{r}
+Then, we proceed to plot time series and save plots to files: 
+```{r, eval = FALSE}
 for(i in 1:nrow(indicatorList)){
   
   ## Extract indicator name and id
@@ -406,8 +406,8 @@ for(i in 1:nrow(indicatorList)){
       geom_point(aes(y = median, color = ICunitName)) + 
       geom_errorbar(aes(ymin = q025, ymax = q975, color = ICunitName), width = 0.5, alpha = 0.25) + 
       geom_line(aes(y = median, color = ICunitName)) + 
-      geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
-      geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
+      #geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
+      #geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
       ylim(0, 1) + 
       xlab("Year") + ylab("Indicator value (scaled)") + 
       ggtitle(ind_name) +
@@ -422,8 +422,8 @@ for(i in 1:nrow(indicatorList)){
       geom_point(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) + 
       geom_errorbar(aes(ymin = q025, ymax = q975, group = ICunitName), width = 0.5, color = plot.col, alpha = 0.1) + 
       geom_line(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) +
-      geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
-      geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
+      #geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
+      #geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
       ylim(0, 1) + 
       xlab("Year") + ylab("Indicator value (scaled)") + 
       ggtitle(ind_name) +
@@ -440,4 +440,34 @@ for(i in 1:nrow(indicatorList)){
   
   message("")
 }
+
+## Save entire plot lists for re-use later
+saveRDS(TS_raw, file = "results_Indicators/PlotList_TimeSeries_raw.rds")
+saveRDS(TS_scaled, file = "results_Indicators/PlotList_TimeSeries_scaled.rds")
+```
+```{r, echo = FALSE}
+TS_raw <- readRDS("results_Indicators/PlotList_TimeSeries_raw.rds")
+TS_scaled <- readRDS("results_Indicators/PlotList_TimeSeries_scaled.rds")
+```
+
+## Indicator presentation
+
+```{r, results = "asis"}
+
+for(i in 1:nrow(indicatorList)){
+  
+  cat('\n\n### ', indicatorList$name[i], '\n\n')
+  
+  #cat('Raw (unscaled) indicator data: \n')
+  #cat('\n')
+  print(TS_raw[[i]])
+  
+  #cat('\n\n')
+  
+  #cat('Scaled indicator data including weighted averages: \n')
+  #cat('\n')
+  print(TS_scaled[[i]])
+  
+}
+
 ```
