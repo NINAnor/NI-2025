@@ -1,8 +1,10 @@
 ---
-title: "Nature Index: Mountain ecosystem"
+title: 'Nature Index: Mountain ecosystem'
 author: "Chloé R. Nater"
-output: html_document
 date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -99,8 +101,8 @@ Diagnostics <- TRUE # Yes
 TestRun <- FALSE # No
 
 ## Shapefiles library path
-#shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
-shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
+shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
+#shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
 
 ```
 
@@ -439,7 +441,7 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    OutputType = OutputType, 
                    ecosystem = ecosystem_use,
                    plotMedian = TRUE, plotCI = TRUE, plotDisplacement = FALSE, 
-                   interactiveMap = TRUE)
+                   interactiveMap = FALSE)
 ```
 
 And we can do the same with location displacement instead of CI width: 
@@ -449,7 +451,7 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    OutputType = OutputType, 
                    ecosystem = ecosystem_use,
                    plotMedian = TRUE, plotCI = FALSE, plotDisplacement = TRUE, 
-                   interactiveMap = TRUE)
+                   interactiveMap = FALSE)
 ```
 
 Static versions of all types of maps for the different years are saved under `r paste0(plotPath, "/Maps")`.
