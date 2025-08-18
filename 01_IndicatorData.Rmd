@@ -1,8 +1,10 @@
 ---
-title: "Indicator data: calculations and visualizations"
+title: 'Indicator data: calculations and visualizations'
 author: "Chloé R. Nater"
-output: html_document
 date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -452,6 +454,9 @@ TS_scaled <- readRDS("results_Indicators/PlotList_TimeSeries_scaled.rds")
 
 ## Indicator presentation
 
+Below, we will show the time series plots for raw and scaled indicator data. 
+The render has not been implemented properly yet and for the time being, we refer to the individual plot files saved under "plots". 
+
 ```{r, results = "asis"}
 
 for(i in 1:nrow(indicatorList)){
@@ -460,13 +465,13 @@ for(i in 1:nrow(indicatorList)){
   
   #cat('Raw (unscaled) indicator data: \n')
   #cat('\n')
-  print(TS_raw[[i]])
+  #print(TS_raw[[i]])
   
   #cat('\n\n')
   
   #cat('Scaled indicator data including weighted averages: \n')
   #cat('\n')
-  print(TS_scaled[[i]])
+  #print(TS_scaled[[i]])
   
 }
 
