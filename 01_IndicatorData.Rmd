@@ -454,25 +454,42 @@ TS_scaled <- readRDS("results_Indicators/PlotList_TimeSeries_scaled.rds")
 
 ## Indicator presentation
 
-Below, we will show the time series plots for raw and scaled indicator data. 
-The render has not been implemented properly yet and for the time being, we refer to the individual plot files saved under "plots". 
+Below, we show the time series plots for raw and scaled indicator data. 
 
-```{r, results = "asis"}
-
+```{r, results = "asis", echo = FALSE, eval = TRUE}
+## Plot display for HTML render
 for(i in 1:nrow(indicatorList)){
+
+  ind_id <- indicatorList$id[i]
+  ind_name <- indicatorList$name[i]
   
-  cat('\n\n### ', indicatorList$name[i], '\n\n')
+  savePath_i <- paste0("plots/id_", ind_id, "_", stringr::str_replace_all(ind_name, " ", "_"))
+
+  raw_file <- paste0(savePath_i, "/TimeSeries_raw.svg")
+  scaled_file <- paste0(savePath_i, "/TimeSeries_scaled.svg")
   
-  #cat('Raw (unscaled) indicator data: \n')
-  #cat('\n')
-  #print(TS_raw[[i]])
+  cat("\n\n### ", indicatorList$name[i], "\n\n")
+  cat("![](", raw_file, ")\n\n")
+  cat("![](", scaled_file, ")\n\n")
+}
+
+```
+
+```{r, results = "asis", echo = FALSE, eval = FALSE}
+## Plot display for PDF render
+for(i in 1:nrow(indicatorList)){
+
+  ind_id <- indicatorList$id[i]
+  ind_name <- indicatorList$name[i]
   
-  #cat('\n\n')
+  savePath_i <- paste0("plots/id_", ind_id, "_", stringr::str_replace_all(ind_name, " ", "_"))
+
+  raw_file <- paste0(savePath_i, "/TimeSeries_raw.pdf")
+  scaled_file <- paste0(savePath_i, "/TimeSeries_scaled.pdf")
   
-  #cat('Scaled indicator data including weighted averages: \n')
-  #cat('\n')
-  #print(TS_scaled[[i]])
-  
+  cat("\n\n### ", indicatorList$name[i], "\n\n")
+  cat("![](", raw_file, "){height=4in}\n\n")
+  cat("![](", scaled_file, "){height=4in}\n\n")
 }
 
 ```
