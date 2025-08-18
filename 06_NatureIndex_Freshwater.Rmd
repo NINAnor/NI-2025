@@ -1,8 +1,10 @@
 ---
-title: "Nature Index: Freshwater ecosystem"
+title: 'Nature Index: Freshwater ecosystem'
 author: "Chloé R. Nater"
-output: html_document
 date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -99,8 +101,8 @@ Diagnostics <- TRUE # Yes
 TestRun <- FALSE # No
 
 ## Shapefiles library path
-shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
-#shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
+#shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
+shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
 
 ```
 
@@ -298,6 +300,7 @@ For NI2025, the top 35 indicator weights for ecosystem `r Ecosystem[1]` are attr
 NIcalc::plotWeights(Index$wholeArea$'2024', main = paste0("NI2025 (", Ecosystem[1], ")"))
 ```
 
+  
 This figure, as well as an extended version showing weights for all included indicators, can be found in the ecosystem-specific results folder under "Plots". 
 
 ```{r, include = FALSE}
@@ -348,6 +351,7 @@ For just getting a quick look at the NI values for all of Norway over time, we c
 plot(Index$wholeArea, main = paste0("NI2025 ", Ecosystem[1]), cex = 1, lwd = 2, shade = TRUE)
 ```
 
+  
 `NIflex::plotNI_StandardTS()` gives us an extended version of this type of plot which also includes values for each major region of Norway separately: 
 
 ```{r}
@@ -358,6 +362,7 @@ standardTS1 <- NIflex::plotNI_StandardTS(Index = Index,
 standardTS1
 ```
 
+  
 The plot above shows the development of NI over time on the complete scale of values from 0 to 1. This gives a good idea of where values lie relative to the ideal of "good condition" / "as little as possible human impacted ecosystem" but is not necessarily the best for looking at between-year changes in NI. 
 The latter is more obvious with a truncated y axis that is limited to the range of values that this NI actually takes: 
 
@@ -393,6 +398,8 @@ densTS1 <- NIflex::plotNI_DensityRidgeTS(Index = Index,
                                          selectedArea  = "wholeArea")
 densTS1
 ```
+
+  
 And the same separated by area: 
 
 ```{r, warning = FALSE, message = FALSE}
@@ -432,6 +439,7 @@ CustomNI_map <- NIflex::geomapNI(Index = Index,
                                  shapeLibraryPath = shapeLibraryPath)
 ```
 
+  
 Then we are ready to plot the pair of maps representing the median values and value uncertainty: 
 ```{r, warnings = FALSE, message = FALSE}
 NIflex::plotNI_Map(shp = CustomNI_map, 
@@ -442,6 +450,7 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    interactiveMap = TRUE)
 ```
 
+  
 And we can do the same with location displacement instead of CI width: 
 ```{r, warnings = FALSE, message = FALSE}
 NIflex::plotNI_Map(shp = CustomNI_map, 
@@ -451,7 +460,8 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    plotMedian = TRUE, plotCI = FALSE, plotDisplacement = TRUE, 
                    interactiveMap = TRUE)
 ```
-
+  
+  
 Static versions of all types of maps for the different years are saved under `r paste0(plotPath, "/Maps")`.
 The code for generating them is below:
 
@@ -523,9 +533,10 @@ Below, we calculate and then visualize the two requested thematic indices.
 
 ### Freshwater acidification
 
-```{r, echo = FALSE}
-## Key indicator weighing
+```{r, echo = FALSE, eval = FALSE}
+## Turn off key indicator and trophic group weighing
 KeyIndicators <- FALSE
+TrophicWeights <- FALSE
 
 ## Output type
 OutputType <- "ThematicIndex"
@@ -544,7 +555,7 @@ funArguments <- listFunctionArguments(OutputType = OutputType,
 TestRun <- FALSE # No
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 ## Set ecosystem to null (thematic indices)
 ecosystem_use <- NULL
 
@@ -588,39 +599,50 @@ theme_acidification <- readRDS("NI2025_Data_Freshwater_themeAcidification.rds")
 
 The following table shows the indicators that are part of the thematic index for freshwater acidification: 
 
-```{r}
-knitr::kable(theme_acidification$importData$indicators,
-             caption = "List of indicators included in thematic index for freshwater acidification. id and name are consistent with use in the NI database. Indicators with keyElement = TRUE are treated as key indicators (nøkkelindikatorer) and assigned extra weight. Functional group also affects the weight attributed to indicators. Scaling model = Low means that indicator values > reference are considered good, while scaling model Max assumes that the reference is a maximum threshold, and values exceeding it are bad.")
+```{r, echo = FALSE}
+ind_table <- theme_acidification$importData$indicators %>%
+  dplyr::select(id, name, functionalGroup, scalingModel)
+
+knitr::kable(ind_table,
+             caption = "List of indicators included in thematic index for freshwater acidification. id and name are consistent with use in the NI database. Key indicator (nøkkelindikator) weights are not used for calculating thematic indices. Functional group also affects the weight attributed to indicators. Scaling model = Low means that indicator values > reference are considered good, while scaling model Max assumes that the reference is a maximum threshold, and values exceeding it are bad.")
 ```
 
+  
 The indicator weights are shown below. 
 
 ```{r, echo = FALSE}
-NIcalc::plotWeights(theme_acidifcation$CustomIndex$wholeArea$`2024`,
+NIcalc::plotWeights(theme_acidification$CustomIndex$wholeArea$`2024`,
                     main = "Freshwater acidification",
                     keycol = "grey", barcol = "grey")
 ```
+
+  
 The thematic index has developed over time as follows: 
 
-```{r, warning = FALSE, message = FALSE}
-NIflex::plotNI_StandardTS(Index = theme_acidifcation$CustomIndex,
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+NIflex::plotNI_StandardTS(Index = theme_acidification$CustomIndex,
                           plotTitle = "Freshwater acidification",
                           addAverage = TRUE,
                           truncateY = TRUE)
 ```
+
+  
 The complete indicator distributions are visualized next:
-```{r, warning = FALSE, message = FALSE}
-NIflex::plotNI_DensityRidgeTS(Index = Index, 
-                                         OutputType = OutputType, 
-                                         ecosystem = "Ferskvann", 
-                                         theme = theme,
-                                         allAreas = TRUE)
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+NIflex::plotNI_DensityRidgeTS(Index = theme_acidification$CustomIndex, 
+                                      OutputType = OutputType, 
+                                      ecosystem = "Ferskvann", 
+                                      theme = theme,
+                                      allAreas = TRUE)
 ```
+
 ### Freshwater eutrophication
 
-```{r, echo = FALSE}
-## Key indicator weighing
+```{r, echo = FALSE, eval = FALSE}
+## Turn off key indicator and trophic group weighing
 KeyIndicators <- FALSE
+TrophicWeights <- FALSE
 
 ## Output type
 OutputType <- "ThematicIndex"
@@ -638,7 +660,7 @@ funArguments <- listFunctionArguments(OutputType = OutputType,
 TestRun <- FALSE # No
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 ## Set ecosystem to null (thematic indices)
 ecosystem_use <- NULL
 
@@ -682,32 +704,40 @@ theme_eutrophication <- readRDS("NI2025_Data_Freshwater_themeEutrophication.rds"
 
 The following table shows the indicators that are part of the thematic index for freshwater eutrophication: 
 
-```{r}
-knitr::kable(theme_eutrophication$importData$indicators,
-             caption = "List of indicators included in thematic index for freshwater eutrophication. id and name are consistent with use in the NI database. Indicators with keyElement = TRUE are treated as key indicators (nøkkelindikatorer) and assigned extra weight. Functional group also affects the weight attributed to indicators. Scaling model = Low means that indicator values > reference are considered good, while scaling model Max assumes that the reference is a maximum threshold, and values exceeding it are bad.")
+```{r, echo = FALSE}
+ind_table <- theme_eutrophication$importData$indicators %>%
+  dplyr::select(id, name, functionalGroup, scalingModel)
+
+knitr::kable(ind_table,
+             caption = "List of indicators included in thematic index for freshwater eutrophication. id and name are consistent with use in the NI database. Key indicator (nøkkelindikator) weights are not used for calculating thematic indices. Functional group also affects the weight attributed to indicators. Scaling model = Low means that indicator values > reference are considered good, while scaling model Max assumes that the reference is a maximum threshold, and values exceeding it are bad.")
 ```
 
+  
 The indicator weights are shown below. 
 
 ```{r, echo = FALSE}
-NIcalc::plotWeights(theme_acidifcation$CustomIndex$wholeArea$`2024`,
+NIcalc::plotWeights(theme_eutrophication$CustomIndex$wholeArea$`2024`,
                     main = "Freshwater eutrophication",
                     keycol = "grey", barcol = "grey")
 ```
+
+  
 The thematic index has developed over time as follows: 
 
-```{r, warning = FALSE, message = FALSE}
-NIflex::plotNI_StandardTS(Index = theme_acidifcation$CustomIndex,
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+NIflex::plotNI_StandardTS(Index = theme_eutrophication$CustomIndex,
                           plotTitle = "Freshwater eutrophication",
                           addAverage = TRUE,
                           truncateY = TRUE)
 ```
+
+  
 The complete indicator distributions are visualized next:
 
-```{r, warning = FALSE, message = FALSE}
-NIflex::plotNI_DensityRidgeTS(Index = Index, 
-                                         OutputType = OutputType, 
-                                         ecosystem = "Ferskvann", 
-                                         theme = theme,
-                                         allAreas = TRUE)
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+NIflex::plotNI_DensityRidgeTS(Index = theme_eutrophication$CustomIndex, 
+                                      OutputType = OutputType, 
+                                      ecosystem = "Ferskvann", 
+                                      theme = theme,
+                                      allAreas = TRUE)
 ```
