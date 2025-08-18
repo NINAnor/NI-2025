@@ -558,7 +558,7 @@ dropInd <- selectDropIndicators(DropIndMode = DropIndMode,
                                 customList = DropIndList)
 
 ## Calculate index for specified ecosystem/indicators
-theme_acidifcation <- calculateCustomNI(ecosystem = ecosystem_use,
+theme_acidification <- calculateCustomNI(ecosystem = ecosystem_use,
                               indicators = indicators_use,
                               theme = theme,
                               dropInd = dropInd,
@@ -634,8 +634,8 @@ funArguments <- listFunctionArguments(OutputType = OutputType,
                                       theme = theme)
 
 ## Test run (10 vs. 1000 iterations in simulation)
-TestRun <- TRUE # Yes
-#TestRun <- FALSE # No
+#TestRun <- TRUE # Yes
+TestRun <- FALSE # No
 ```
 
 ```{r, echo = FALSE}
