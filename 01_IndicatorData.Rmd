@@ -3,8 +3,8 @@ title: 'Indicator data: calculations and visualizations'
 author: "Chloé R. Nater"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -248,12 +248,14 @@ indIndex <- list()
 
 ## Calculate indicator indices and save results, per indicator
 for(i in 1:nrow(indicatorList)){
-  
+
   indIndex_i <- calculate_IndicatorIndex(dataSet = indicatorData[[i]],
                                      testRun = FALSE,
                                      NAimputation = FALSE,
                                      weigh_byEcosystem = FALSE,
-                                     truncAtRef = TRUE)
+                                     include_subAreas = FALSE,
+                                     truncAtRef = TRUE,
+                                     enforce_weightSum1 = TRUE)
   indIndex[[i]] <- indIndex_i
   
   readr::write_excel_csv(indIndex_i$summary, file = paste0("results_Indicators/indIndex_Summary_id_", indicatorList$id[i], ".csv"))
@@ -345,7 +347,7 @@ for(i in 1:nrow(indicatorList)){
     dplyr::mutate(year_t = as.integer(year))
   
   data_indIdx <- readRDS(paste0("results_Indicators/indIndex_id_", ind_id, ".rds"))$summary %>%
-    dplyr::filter(indexArea == "wholeArea" & year_t %in% ind_focalYears) %>%
+    dplyr::filter(indexArea == "wholeArea" & year_t %in% ind_focalYears & !data_singleArea ) %>%
     dplyr::mutate(year_t = as.integer(year_t))
   
   ## Truncate scaled values (if necessary)
@@ -409,9 +411,9 @@ for(i in 1:nrow(indicatorList)){
       geom_point(aes(y = median, color = ICunitName)) + 
       geom_errorbar(aes(ymin = q025, ymax = q975, color = ICunitName), width = 0.5, alpha = 0.25) + 
       geom_line(aes(y = median, color = ICunitName)) + 
-      #geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
-      #geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
-      ylim(0, 1) + 
+      geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
+      geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
+      ylim(0, 1.01) + 
       xlab("Year") + ylab("Indicator value (scaled)") + 
       ggtitle(ind_name) +
       paletteer::scale_color_paletteer_d(palette = "ggthemes::Tableau_20", name = "Area") + 
@@ -425,8 +427,8 @@ for(i in 1:nrow(indicatorList)){
       geom_point(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) + 
       geom_errorbar(aes(ymin = q025, ymax = q975, group = ICunitName), width = 0.5, color = plot.col, alpha = 0.1) + 
       geom_line(aes(y = median, group = ICunitName), color = plot.col, alpha = 0.2) +
-      #geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
-      #geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
+      geom_errorbar(data = data_indIdx, aes(x = year_t, ymin = q025, ymax = q975), width = 0.5, color = plot.col2) + 
+      geom_point(data = data_indIdx, aes(x = year_t, y = median), shape = 21, size = 2, stroke = 1.5, fill = "white", color = plot.col2) +
       ylim(0, 1) + 
       xlab("Year") + ylab("Indicator value (scaled)") + 
       ggtitle(ind_name) +

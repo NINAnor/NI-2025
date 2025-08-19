@@ -8,6 +8,11 @@
 #' @param ecosystem character string specifying which ecosystem to aggregate for.
 #' Has to be provided if `weigh_byEcosystem = TRUE` and must be one of the following: "Skog", "Fjell", "Våtmark", "Åpent lavland", "Ferskvann", "Kystvann", "Hav".
 #' @param include_subAreas logical. If TRUE (default) calculates indicator index for all of Norway and for represented sub-regions. If FALSE, only calculates for all of Norway.
+#' @param enforce_weightSum1 logical. If TRUE, rescales weights for each indicator-
+#' year combination to sum to 1. This allows calculating indices representing
+#' comparable area-weighted means that are specific to the combination of areas for
+#' which data is available. This is so far only relevant for single indicator
+#' indices caclulated without imputation.
 #' @param truncAtRef logical. Whether indicator values should be truncated at the reference level before aggregation.
 #'
 #' @returns a list containing indicator name, years with data used in calculations, ecosystem aggregated for, and the calculated indicator index both as a summary table and complete output from `NIcalc::calculateIndex()`.
@@ -21,6 +26,7 @@ calculate_IndicatorIndex <- function(dataSet,
                                      weigh_byEcosystem = FALSE,
                                      ecosystem = NULL,
                                      include_subAreas = TRUE,
+                                     enforce_weightSum1,
                                      truncAtRef){
   
   all_ES <- c("Skog", "Fjell", "Våtmark", "Åpent lavland", 
@@ -194,7 +200,8 @@ calculate_IndicatorIndex <- function(dataSet,
                                            w = 0,
                                            awbs = TRUE,
                                            awBSunit = awBSunit,
-                                           truncAtRef = truncAtRef)
+                                           truncAtRef = truncAtRef,
+                                           enforce_weightSum1 = enforce_weightSum1)
   
   NIareas <- names(indicatorIndex)
   years <- names(indicatorIndex[[1]])
@@ -244,10 +251,35 @@ calculate_IndicatorIndex <- function(dataSet,
     dplyr::filter(!flagNA) %>%
     dplyr::select(-flagNA)
   
+  # Identify and flag years with only 1 area (index = realization of indicator value, no weighted average)
+  areaData <- data.frame()
+  
+  for(a in 1:length(indicatorIndex)){
+    for(t in dataYears){
+      
+      area_count <- length(indicatorIndex[[a]][[t]]$ICunits)
+      areaData_a_t <- data.frame(
+        indexArea = names(indicatorIndex)[a],
+        year_t = t,
+        n_spUnit_Data = area_count
+      )
+      
+      areaData <- rbind(areaData, areaData_a_t)
+    }
+  }
+  
+  areaData <- areaData %>%
+    dplyr::mutate(data_singleArea = ifelse(n_spUnit_Data == 1, TRUE, FALSE))
+  
+  result_sum <- result_sum %>%
+    dplyr::left_join(areaData[, c("indexArea", "year_t", "data_singleArea")],
+                     by = c("indexArea", "year_t"))
+  
   # Collate and return results
   out.list <- list(
     indicator = indicatorName,
     dataYears = dataYears,
+    dataAreas = areaData,
     ecosystem = ifelse(weigh_byEcosystem, ecosystem, "sum"),
     summary = result_sum,
     indexOutput = indicatorIndex
