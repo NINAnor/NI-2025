@@ -401,6 +401,7 @@ for(i in 1:nrow(indicatorList)){
   TS_raw[[i]] <- ts_raw
   ggsave(file = paste0(savePath_i, "/TimeSeries_raw.svg"), plot = ts_raw, width = 8, height = ifelse(manyAreas, 5, 6.5))
   ggsave(file = paste0(savePath_i, "/TimeSeries_raw.pdf"), plot = ts_raw, width = 8, height = ifelse(manyAreas, 5, 6.5))
+  ggsave(file = paste0(savePath_i, "/TimeSeries_raw.png"), plot = ts_raw,width = 8, height = ifelse(manyAreas, 5, 6.5), dpi = 150)
   
   # Scaled data
   if(!manyAreas){
@@ -439,6 +440,7 @@ for(i in 1:nrow(indicatorList)){
   TS_scaled[[i]] <- ts_scaled
   ggsave(file = paste0(savePath_i, "/TimeSeries_scaled.svg"), plot = ts_scaled, width = 8, height = ifelse(manyAreas, 5, 6.5))
   ggsave(file = paste0(savePath_i, "/TimeSeries_scaled.pdf"), plot = ts_scaled, width = 8, height = ifelse(manyAreas, 5, 6.5))
+  ggsave(file = paste0(savePath_i, "/TimeSeries_scaled.png"), plot = ts_scaled, width = 8, height = ifelse(manyAreas, 5, 6.5), dpi = 150)
   
   message("")
 }
@@ -447,7 +449,7 @@ for(i in 1:nrow(indicatorList)){
 saveRDS(TS_raw, file = "results_Indicators/PlotList_TimeSeries_raw.rds")
 saveRDS(TS_scaled, file = "results_Indicators/PlotList_TimeSeries_scaled.rds")
 ```
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 TS_raw <- readRDS("results_Indicators/PlotList_TimeSeries_raw.rds")
 TS_scaled <- readRDS("results_Indicators/PlotList_TimeSeries_scaled.rds")
 ```
@@ -465,8 +467,11 @@ for(i in 1:nrow(indicatorList)){
   
   savePath_i <- paste0("plots/id_", ind_id, "_", stringr::str_replace_all(ind_name, " ", "_"))
 
-  raw_file <- paste0(savePath_i, "/TimeSeries_raw.svg")
-  scaled_file <- paste0(savePath_i, "/TimeSeries_scaled.svg")
+  #raw_file <- paste0(savePath_i, "/TimeSeries_raw.svg")
+  #scaled_file <- paste0(savePath_i, "/TimeSeries_scaled.svg")
+  
+  raw_file <- paste0(savePath_i, "/TimeSeries_raw.png")
+  scaled_file <- paste0(savePath_i, "/TimeSeries_scaled.png")
   
   cat("\n\n### ", indicatorList$name[i], "\n\n")
   cat("![](", raw_file, ")\n\n")

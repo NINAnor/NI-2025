@@ -70,6 +70,7 @@ data/IndicatorData_StatSummaries
 # Graphics
 *.pdf
 *.svg
+*.png 
 
 # Results directories with contents
 results_Forest
@@ -93,6 +94,3 @@ NI2025_Data_Ocean.rds
 
 NI2025_Data_Freshwater_themeAcidification.rds
 NI2025_Data_Freshwater_themeEutrophication.rds
-
-# Large rendered files
-01_IndicatorData.html
