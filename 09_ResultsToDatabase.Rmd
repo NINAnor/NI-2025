@@ -1,0 +1,132 @@
+---
+title: "Results: collation and archiving"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(dplyr)
+```
+
+In the previous chapters, we have saved the data resulting from simulations and index calculations for each indicator and ecosystem locally. 
+
+The new Nature Index webpage (old version at https://www.naturindeks.no; to be updated soon) will present much of this data graphically. As the webpage reads information directly from the NI database (https://naturindeks.nina.no), the results therefore need to be fed back to the NI database. 
+
+For the previous iteration (NI2020), this upload has been handled manually. In 2021-2022, routines for feeding back calculated index data were partially coded by Bård Pedersen. His code is archived on NINA's internal drive under the path:
+
+P:/412430_naturindeks/DataUpload_Code_from_BårdPedersen
+
+This code is not completely documented, has not been thoroughly tested, and not been included into NIcalc (yet). It is also only partially applicable for NI2025 because the new NI webpage will present additional information (raw and scaled indicator data including uncertainty, index uncertainty on maps) and altered content (new approach to indicator indices, new options for toggling on/off certain parts of information).
+For these reasons, we will not be using/working from Bård Pedersen's code, but instead collate data a) for all indicators and b) for all ecosystem indices and upload new tables manually to the NI database. 
+
+The workflow below contains the collation of indicator and ecosystem index data into joint tables that are then saved as .csv and handed to the database administrator for manual archiving.
+
+## Indicator (index) data
+
+We start by retrieving the indicator list, then cycle through all indicators and collate the statistical summaries of: 
+
+- Simulated raw indicator data
+- Simulated scaled indicator data
+- Calculated indicator index data
+
+Before we do that, we have to determine which version of the scaled data we want to use (with respect to whether reference value uncertainty is to be accounted for, and at what point in calculations truncation does or does not happen.) This is based on the two toggles `uncertainRefValue` and `truncAfterSummary`, and these should be set consistent with use in the first chapter:
+
+```{r, eval = FALSE}
+## Toggle for using/ignoring reference value uncertainty in visualizations
+uncertainRefValue <- FALSE
+
+## Toggle for visualizing scaled values truncated before or after summarising
+truncAfterSummary <- TRUE
+
+## Select correct file for scaled data
+filename_scaled <- dplyr::case_when(
+  !uncertainRefValue & truncAfterSummary ~ "fixedRef",
+  !uncertainRefValue & !truncAfterSummary ~ "fixedRef_truncPreSum",
+  uncertainRefValue & truncAfterSummary ~ "sampledRef",
+  uncertainRefValue & !truncAfterSummary ~ "sampledRef_truncPreSum",
+)
+```
+
+Now we are ready to retrieve data: 
+```{r, eval = FALSE}
+## Read indicator list
+indicatorList <- readRDS("data/NI2025_IndicatorList.rds")
+
+## Set up empty data frames for collation
+IndData_raw <- data.frame()
+IndData_scaled <- data.frame()
+IndIndexData <- data.frame()
+
+## Read and collate data for each indicator
+for(i in 1:nrow(indicatorList)){
+  
+  # Set name and id
+  indName <- indicatorList$name[i]
+  indId <- indicatorList$id[i]
+  
+  # Load and collate raw indicator data
+  IndData_raw_i <- readRDS(paste0("data/IndicatorData_StatSummaries/statSummary_id_", indId, "_raw.rds")) %>%
+    dplyr::mutate(id = indId,
+                  name = indName,
+                  .before = 1)
+  IndData_raw <- IndData_raw %>%
+    dplyr::bind_rows(IndData_raw_i)
+  
+  # Load and collate scaled indicator data
+    IndData_scaled_i <- readRDS(paste0("data/IndicatorData_StatSummaries/statSummary_id_", indId, "_scaled_", filename_scaled,  ".rds")) %>%
+    dplyr::mutate(id = indId,
+                  name = indName,
+                  .before = 1)
+  IndData_scaled <- IndData_scaled %>%
+    dplyr::bind_rows(IndData_scaled_i)
+  
+  # Load and collate indicator index data
+  IndIndexData_i <- readRDS(paste0("results_Indicators/indIndex_id_", indId, ".rds"))$summary %>%
+    dplyr::filter(!data_singleArea) %>%
+    dplyr::mutate(id = indId,
+                  name = indName,
+                  .before = 1)
+  IndIndexData <- IndIndexData %>%
+    dplyr::bind_rows(IndIndexData_i)
+}
+```
+
+Finally, we save the collated data as CSV for incorporation in the NI database: 
+```{r, eval = FALSE}
+if(!dir.exists("data_forUpload")){
+ dir.create("data_forUpload")
+}
+
+readr::write_excel_csv(IndData_raw, file = "data_forUpload/IndicatorData_raw.csv")
+readr::write_excel_csv(IndData_scaled, file = "data_forUpload/IndicatorData_scaled.csv")
+readr::write_excel_csv(IndIndexData, file = "data_forUpload/IndicatorIndexData.csv")
+```
+
+
+## Nature index data
+
+For the calculated NI data, we list ecosystems, collate statistical summaries for all, and consequently save as CSV for incorporation in the NI database: 
+
+```{r, eval = FALSE}
+## List ecosystems
+ecosystems <- c("Forest", "Mountain", "Wetlands", "OpenLowland", 
+                "Freshwater", "Coast", "Ocean")
+
+## Set up empty data frame for collation 
+indexData <- data.frame()
+
+##Read and collate data for each ecosystem
+for(i in 1:length(ecosystems)){
+  
+  indexData_i <- readr::read_csv(paste0("results_", ecosystems[i], "/indexStatSummary.csv")) %>%
+    dplyr::mutate(Ecosystem = ecosystems[i],
+                  .before = 1)
+  
+  indexData <- indexData %>%
+    dplyr::bind_rows(indexData_i)
+}
+
+readr::write_excel_csv(indexData, file = "data_forUpload/NatureIndex_allEcosystems.csv")
+```

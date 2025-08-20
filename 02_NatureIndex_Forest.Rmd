@@ -510,5 +510,3 @@ for(t in 1:length(years)){
   
 }
 ```
-
-## Sending numerical results table to the NI database
