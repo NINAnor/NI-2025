@@ -82,6 +82,8 @@ results_Coast
 results_Ocean
 results_Indicators
 
+data_forUpload
+
 # Results files
 stepData.rds
 NI2025_Data_Forest.rds
