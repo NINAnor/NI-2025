@@ -316,8 +316,8 @@ plot.col2 <- "#0B2120"
 ## Make lists to store plots for each indicator
 TS_raw <- list()
 TS_scaled <- list()
-#MAP_raw <- list()
-#MAP_scaled <- list()
+TS_indIdx <- list()
+ts_indIdx_std <- list()
 
 ```
 
@@ -346,8 +346,10 @@ for(i in 1:nrow(indicatorList)){
   data_scaled <- readRDS(paste0("data/IndicatorData_StatSummaries/statSummary_id_", ind_id, "_scaled_", filename_scaled, ".rds")) %>%
     dplyr::mutate(year_t = as.integer(year))
   
-  data_indIdx <- readRDS(paste0("results_Indicators/indIndex_id_", ind_id, ".rds"))$summary %>%
-    dplyr::filter(indexArea == "wholeArea" & year_t %in% ind_focalYears & !data_singleArea ) %>%
+  output_indIdx <- readRDS(paste0("results_Indicators/indIndex_id_", ind_id, ".rds"))
+  
+  data_indIdx <- output_indIdx$summary %>%
+    dplyr::filter(indexArea == "wholeArea", year_t %in% ind_focalYears & !data_singleArea) %>% 
     dplyr::mutate(year_t = as.integer(year_t))
   
   ## Truncate scaled values (if necessary)
@@ -444,12 +446,38 @@ for(i in 1:nrow(indicatorList)){
   ggsave(file = paste0(savePath_i, "/TimeSeries_scaled.pdf"), plot = ts_scaled, width = 8, height = ifelse(manyAreas, 5, 6.5))
   ggsave(file = paste0(savePath_i, "/TimeSeries_scaled.png"), plot = ts_scaled, width = 8, height = ifelse(manyAreas, 5, 6.5), dpi = 150)
   
+  
+  # Indicator indices (average and sub-areas)
+  ts_indIdx <- NIflex::plotNI_StandardTS(Index = output_indIdx$indexOutput,
+                                         plotTitle = paste0(ind_name, " (arealvektet gjennomsnitt)"),
+                                         addAverage = TRUE,
+                                         truncateY = TRUE) + 
+    theme(axis.text.x = element_text(angle = 30, vjust = 0.8))
+  
+  ts_indIdx2 <- NIflex::plotNI_StandardTS(Index = output_indIdx$indexOutput,
+                                          plotTitle = paste0(ind_name, " (arealvektet gjennomsnitt)"),
+                                          addAverage = TRUE,
+                                          truncateY = FALSE) + 
+    theme(axis.text.x = element_text(angle = 30, vjust = 0.8))
+  
+  TS_indIdx[[i]] <- ts_indIdx
+  ggsave(file = paste0(savePath_i, "/TimeSeries_indIdx.svg"), plot = ts_indIdx, width = 7, height = 4)
+  ggsave(file = paste0(savePath_i, "/TimeSeries_indIdx.pdf"), plot = ts_indIdx, width = 7, height = 4)
+  ggsave(file = paste0(savePath_i, "/TimeSeries_indIdx.png"), plot = ts_indIdx, width = 7, height = 4, dpi = 150)
+  
+  TS_indIdx_std[[i]] <- ts_indIdx2
+  ggsave(file = paste0(savePath_i, "/TimeSeries_indIdx_std.svg"), plot = ts_indIdx2, width = 7, height = 4)
+  ggsave(file = paste0(savePath_i, "/TimeSeries_indIdx_std.pdf"), plot = ts_indIdx2, width = 7, height = 4)
+  ggsave(file = paste0(savePath_i, "/TimeSeries_indIdx_std.png"), plot = ts_indIdx2, width = 7, height = 4, dpi = 150)
+  
   message("")
 }
 
 ## Save entire plot lists for re-use later
 saveRDS(TS_raw, file = "results_Indicators/PlotList_TimeSeries_raw.rds")
 saveRDS(TS_scaled, file = "results_Indicators/PlotList_TimeSeries_scaled.rds")
+saveRDS(TS_indIdx, file = "results_Indicators/PlotList_TimeSeries_indIdx.rds")
+saveRDS(TS_indIdx_std, file = "results_Indicators/PlotList_TimeSeries_indIdx_std.rds")
 ```
 ```{r, echo = FALSE, eval = FALSE}
 TS_raw <- readRDS("results_Indicators/PlotList_TimeSeries_raw.rds")
