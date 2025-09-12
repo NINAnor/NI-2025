@@ -3,8 +3,8 @@ title: 'Nature Index: Ocean ecosystem'
 author: "Chloé R. Nater"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -440,7 +440,7 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    OutputType = OutputType, 
                    ecosystem = ecosystem_use,
                    plotMedian = TRUE, plotCI = TRUE, plotDisplacement = FALSE, 
-                   interactiveMap = FALSE)
+                   interactiveMap = TRUE)
 ```
 
 And we can do the same with location displacement instead of CI width: 
@@ -450,7 +450,7 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    OutputType = OutputType, 
                    ecosystem = ecosystem_use,
                    plotMedian = TRUE, plotCI = FALSE, plotDisplacement = TRUE, 
-                   interactiveMap = FALSE)
+                   interactiveMap = TRUE)
 ```
 
 Static versions of all types of maps for the different years are saved under `r paste0(plotPath, "/Maps")`.

@@ -3,8 +3,8 @@ title: 'Nature Index: Coastal ecosystem'
 author: "Chloé R. Nater"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
