@@ -85,7 +85,7 @@ for(i in 1:nrow(indicatorList)){
   
   # Load and collate indicator index data
   IndIndexData_i <- readRDS(paste0("results_Indicators/indIndex_id_", indId, ".rds"))$summary %>%
-    dplyr::filter(!data_singleArea) %>%
+    dplyr::filter(indexArea == "wholeArea", !data_singleArea) %>%
     dplyr::mutate(id = indId,
                   name = indName,
                   .before = 1)

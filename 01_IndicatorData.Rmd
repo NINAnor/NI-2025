@@ -253,7 +253,7 @@ for(i in 1:nrow(indicatorList)){
                                      testRun = FALSE,
                                      NAimputation = FALSE,
                                      weigh_byEcosystem = FALSE,
-                                     include_subAreas = FALSE,
+                                     include_subAreas = TRUE,
                                      truncAtRef = TRUE,
                                      enforce_weightSum1 = TRUE)
   indIndex[[i]] <- indIndex_i
@@ -286,7 +286,7 @@ Below, we present the corresponding visualizations in indicator-specific sub-cha
 
 - The defaults for visualization of scaled indicator values are using uncertainty statistics truncated after summarising, and treating the calculations based on fixed references as the baseline. This can be changed using the toggles `truncAfterSummary` and `uncertainRefValue` at the start of this script.
 - Visualizations will be partially displayed in this document, and also saved as files.
-- In this document, we will display 1. featuring all areas and 2. for the most recent year, 2024. Maps for previous years have not been assembled yet, but these will be part of the presentation of data and results on the new NI webpage.
+- In this document, we will display 1. featuring all areas. We will not draw and display maps here as these will be part of the presentation of data and results on the new NI webpage.
 - For now, the visualizations are static. The goal for the website is to have interactive elements in the figures, including: menus to toggle on and off different time series (and reference levels), "sliders" to change year for maps, simultaneous highlights in median and uncertainty maps, etc. 
 - Visualizations of the entire value distributions (see under 5.1. here: https://ninanor.github.io/NIviz/other-figures.html) will not be done for individual indicators (only for the aggregated NI for the different ecosystems).
 
