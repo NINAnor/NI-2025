@@ -254,13 +254,13 @@ for(a in 1:length(CustomNI$CustomIndex)){
 }
 
 indexSummary <- indexSummary %>%
-  dplyr::mutate(Area = dplyr::case_when(Area == "wholeArea" ~ "All seas",
-                                        Area == "E" ~ "Skagerrak",
-                                        Area == "S" ~ "North Sea",
-                                        Area == "C" ~ "Norwegian Sea",
-                                        Area == "N" ~ "Barents Sea",
+  dplyr::mutate(Area = dplyr::case_when(Area == "wholeArea" ~ "All Norway",
+                                        Area == "E" ~ "Eastern Norway",
+                                        Area == "S" ~ "Southern Norway",
+                                        Area == "W" ~ "Western Norway",
+                                        Area == "N" ~ "Northern Norway",
+                                        Area == "C" ~ "Central Norway",
                                         TRUE ~ Area))
-
 
 readr::write_excel_csv(indexSummary, file = paste0(saveFolder, "/indexStatSummary.csv"))
 
