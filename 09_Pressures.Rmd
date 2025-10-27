@@ -636,7 +636,7 @@ p_mean <- ggplot(meanNIReduction_table) +
   geom_bar(aes(x = Økosystem, y = median, fill = Påvirkningsfaktor), stat = "identity", position = "dodge") + 
   scale_fill_manual(values = plot.palette) + 
   xlab("") + 
-  ggtitle("Average (2000-2024)") + 
+  ggtitle("Gjennomsnitt (2000-2024)") + 
   ylab("Reduksjon i indeksverdi") + 
   theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 
