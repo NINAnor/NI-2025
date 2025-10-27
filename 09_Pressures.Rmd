@@ -1,13 +1,6 @@
----
-title: "Pressure factor analysis"
-author: "Chloé R. Nater"
-output:
-  pdf_document: default
-  html_document: default
-date: "`r Sys.Date()`"
----
+# Pressure factor analysis
 
-```{r setup, include = FALSE}
+```{r setup09, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(NIcalc)
 library(magrittr)

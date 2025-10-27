@@ -1,0 +1,34 @@
+---
+title: "Nature Index for Norway 2025"
+author: "Chloé R. Nater"
+site: bookdown::bookdown_site
+documentclass: book
+output:
+  bookdown::gitbook: default
+---
+
+# About {.unnumbered}
+
+This collection of documentation details the workflow for calculating and presenting the Nature Index (NI) for Norway 2025. 
+It constitutes a step by step walkthrough for: 
+
+- Calculating and visualizing raw and scaled indicator data, including area-aggregated averages
+- Calculating and visualizing NI2025 for all seven main ecosystems: forest, mountain, wetlands, open lowland, freshwater, coast, and ocean
+- Running a qualitative analysis of the importance of different pressures
+- Preparing data exports that form the baseline for presenting results on the website
+
+
+For a presentation of all data and results, as well as references to further reading, plesae check out the official webpage: www.naturindeks.no [Currently being updated].
+
+
+## Citation {.unnumbered}
+
+To cite this book please use the following citation:
+
+[TBA]
+
+
+## License {.unnumbered}
+
+The book is licensed under a [CC By 4.0 licence](https://creativecommons.org/licenses/by/4.0/) which means that you can share and adapt the material
+for any purpose. However, you must give appropriate credit, provide a link to the license, and indicate if changes were made. You can not add additional restrictions on the material even when adapted. 

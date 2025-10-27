@@ -97,3 +97,9 @@ NI2025_Data_Ocean.rds
 
 NI2025_Data_Freshwater_themeAcidification.rds
 NI2025_Data_Freshwater_themeEutrophication.rds
+
+# Original HTML renders
+01_IndicatorData.html
+
+# Bookdown files
+_book

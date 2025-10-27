@@ -1,11 +1,6 @@
----
-title: "Results: collation and archiving"
-author: "Chloé R. Nater"
-output: html_document
-date: "`r Sys.Date()`"
----
+# Results collation for archiving
 
-```{r setup, include=FALSE}
+```{r setup10, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(magrittr)
 library(dplyr)
