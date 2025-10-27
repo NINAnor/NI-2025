@@ -11,6 +11,8 @@ summarise_IndicatorDist <- function(indSim,
   }
   
   ## Summarise indicator value distributions per area and year and save summaries
+  
+  # Without truncation
   indSim_sum <- indSim %>%
     dplyr::group_by(ICunitId, ICunitName, year) %>%
     dplyr::filter(!is.na(value)) %>%
@@ -27,19 +29,33 @@ summarise_IndicatorDist <- function(indSim,
                      .groups = "keep") %>%
     dplyr::ungroup()
   
+  # With truncation post-summary
+  indSim_sum2 <- indSim_sum %>%
+    dplyr::mutate(across(c(mean, median, q025, q05, q25, q75, q95, q975), ~ ifelse(.x > 1, 1, .x))) %>%
+    rowwise() %>%
+    mutate(sd_adj = ifelse(all(c_across(c(mean, median, q025, q05, q25, q75, q95, q975)) == 1), 0, sd),
+           rel_sd_adj = ifelse(all(c_across(c(mean, median, q025, q05, q25, q75, q95, q975)) == 1), 0, rel_sd)) %>%
+    ungroup()
+
+  # Save
   saveRDS(indSim_sum, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, ".rds"))
+  saveRDS(indSim_sum2, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, "truncPostSum.rds"))
   
   options(scipen = 999)
   
   indSim_sum <- indSim_sum %>%
     dplyr::mutate(across(c(mean, median, sd, rel_sd, q025, q05, q25, q75, q95, q975), ~ as.character(round(.x, digits = 5))))
 
+  indSim_sum2 <- indSim_sum2 %>%
+    dplyr::mutate(across(c(mean, median, sd, rel_sd, q025, q05, q25, q75, q95, q975), ~ as.character(round(.x, digits = 5))))
+  
   readr::write_excel_csv(indSim_sum, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, ".csv"))
+  readr::write_excel_csv(indSim_sum2, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, "truncPostSum.csv"))
   
   ## If present, summarise second set of values (truncated set) and save summaries
   if("value_trunc" %in% colnames(indSim)){
     
-    indSim_sum2 <- indSim %>%
+    indSim_sum3 <- indSim %>%
       dplyr::group_by(ICunitId, ICunitName, year) %>%
       dplyr::filter(!is.na(value_trunc)) %>%
       dplyr::summarise(mean = mean(value_trunc),
@@ -55,12 +71,12 @@ summarise_IndicatorDist <- function(indSim,
                        .groups = "keep") %>%
       dplyr::ungroup()
     
-    saveRDS(indSim_sum2, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, "_truncPreSum.rds"))
+    saveRDS(indSim_sum3, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, "_truncPreSum.rds"))
     
-    indSim_sum2 <- indSim_sum2 %>%
+    indSim_sum3 <- indSim_sum3 %>%
       dplyr::mutate(across(c(mean, median, sd, rel_sd, q025, q05, q25, q75, q95, q975), ~ as.character(round(.x, digits = 5))))
     
-    readr::write_excel_csv(indSim_sum2, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, "_truncPreSum.csv"))
+    readr::write_excel_csv(indSim_sum3, file = paste0(savePath, "statSummary_id_", ind_id, "_", dataset_name, "_truncPreSum.csv"))
   }
   
   message("Values summarised and saved for indicator Id: ", ind_id)
