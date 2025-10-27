@@ -94,6 +94,16 @@ for(i in 1:nrow(indicatorList)){
 }
 ```
 
+For indicator index data, we additionally want to reduce the data to the representative years only. Even though some indicators have data for years prior to the first NI year ever used (1990) and for years in between NI update years, that data is often only available for a non-representative sample of areas. As a consequence, calculated indicator indices for those years may look very different than the ones for the focal years. 
+To avoid unnecessary confusion, we'll therefore only present values for the NI focal years (including 1990, if available), as well as the 1995 and 2005 if data is available, on the webpage. Below, we subset the data to the relevant years: 
+
+```{r, eval = FALSE}
+ind_focalYears <- c(1990, 1995, 2000, 2005, 2010, 2014, 2019, 2024)
+
+IndIndexData <- IndIndexData %>%
+  dplyr::filter(year_t %in% ind_focalYears)
+```
+
 Finally, we save the collated data as CSV for incorporation in the NI database: 
 ```{r, eval = FALSE}
 ## Make directory
