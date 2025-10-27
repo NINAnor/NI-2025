@@ -94,8 +94,8 @@ Diagnostics <- TRUE # Yes
 TestRun <- FALSE # No
 
 ## Shapefiles library path
-#shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
-shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
+shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
+#shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
 
 ```
 
