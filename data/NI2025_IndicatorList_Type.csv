@@ -1,0 +1,203 @@
+﻿id,name,type,provider
+3,Alge på bjørk,Plante,NIBIO
+250,Alke,Fugl,NINA
+5,Alm,Plante,NINA
+7,Atlantisk høgmyr areal,Habitat,NINA
+50,Aure,Fisk,NINA
+9,Bananslørsopp,Sopp,NINA
+10,Begerfingersopp,Sopp,NINA
+11,Begroing elver eutrofierings indeks,Habitat,NIVA
+233,Begroing elver forsurings indeks,Habitat,NIVA
+12,Berggylte,Fisk,HI
+399,Bjørkefink,Fugl,NINA
+23,Blåbær,Plante,NIBIO
+16,Blåkveite,Fisk,HI
+18,Blåskjell,Virvelløs,NIVA
+390,Blåstrupe,Fugl,NINA
+20,Blåtopp i fuktig kystlynghei,Plante,NINA
+343,Bløtbunn artsmangfold fauna hav,Artsamfunn,NIVA
+21,Bløtbunn artsmangfold fauna kyst,Artsamfunn,NIVA
+22,Bløtbunn eutrofiindeks,Habitat,NIVA
+398,Bokfink,Fugl,NINA
+282,Boltit,Fugl,NINA
+27,Brosme,Fisk,HI
+29,Brunbjørn,Pattedyr,NINA
+338,Brunmyrak,Plante,NINA
+31,Bunndyr elver forventningsamfunn,Artsamfunn,NINA
+228,Bunndyr-eutrofieringsindeks (ASPT),Artsamfunn,NINA
+231,Bunndyr-forsuringsindeks (Raddum 1),Habitat,NINA
+351,Dagsommerfugler i skog,Virvelløs,NINA
+416,Dagsommerfugler i åpent lavland,Virvelløs,NINA
+340,Dikesoldogg,Plante,NINA
+410,Dompap,Fugl,NINA
+314,Duetrost,Fugl,NINA
+36,Dyreplankton artssammensetning,Artsamfunn,NINA
+38,Edelkreps,Virvelløs,NINA
+41,Eldre lauvsuksesjon (MiS),Habitat,NIBIO
+42,Elg,Pattedyr,NINA
+43,Elvemusling,Virvelløs,NINA
+211,Engmarihand,Plante,NINA
+150,Engvokssopper,Sopp,NINA
+301,Enkeltbekkasin,Fugl,NINA
+49,Fiolgubbe,Sopp,NINA
+268,Fiskemåke ferskvann,Fugl,NINA
+242,Fiskemåke kyst,Fugl,NINA
+284,Fjellerke,Fugl,NINA
+52,Fjellrev,Pattedyr,NINA
+53,Fjellrype,Fugl,NINA
+54,Fjellvalmue,Plante,NINA
+286,Fjellvåk,Fugl,NINA
+392,Flaggspett,Fugl,NINA
+28,Flekkhvitkjuke,Sopp,NINA
+270,Fossekall,Fugl,NINA
+110,Fossenever,Lav,NINA
+407,Fuglekonge,Fugl,NINA
+60,Gamle trær (MiS),Habitat,NIBIO
+434,Gammel skog,Habitat,NIBIO
+62,Gaupe,Pattedyr,NINA
+408,Gjerdesmett,Fugl,NINA
+303,Gluttsnipe,Fugl,NINA
+317,Granmeis,Fugl,NINA
+318,Gransanger,Fugl,NINA
+66,Greplyng,Plante,NINA
+414,Grå fluesnapper,Fugl,NINA
+245,Gråmåke,Fugl,NINA
+68,Grønlandssel,Pattedyr,HI
+69,Grønn fåresopp,Sopp,NINA
+72,Grønngylte,Fisk,HI
+394,Grønnspett,Fugl,NINA
+304,Grønnstilk,Fugl,NINA
+305,Gulerle,Fugl,NINA
+335,Gulsanger,Fugl,NINA
+412,Hagesanger,Fugl,NINA
+74,Hardbunn vegetasjon algeindeks,Habitat,NIVA
+75,Hardbunn vegetasjon nedre voksegrense,Habitat,NIVA
+287,Havelle,Fugl,NINA
+234,Havhest,Fugl,NINA
+235,Havsule,Fugl,NINA
+257,Havørn,Fugl,BirdLife Norge
+288,Heilo,Fugl,NINA
+289,Heipiplerke,Fugl,NINA
+77,Hjort,Pattedyr,NINA
+359,Humler i skog,Virvelløs,NINA
+417,Humler i åpent lavland,Virvelløs,NINA
+337,Hvitmyrak,Plante,NINA
+84,Hyse,Fisk,HI
+319,Hønsehauk,Fugl,BirdLife Norge
+85,Issoleie,Plante,NINA
+86,Isterviersumpskog,Habitat,NINA
+400,Jernspurv,Fugl,NINA
+88,Jerv,Pattedyr,NINA
+89,Jordstjerner,Sopp,NINA
+90,Jordtunger,Sopp,NINA
+438,Karplanter i semi-naturlig eng,Plante,NIBIO
+92,Klappmyss,Pattedyr,HI
+95,Kolmule,Fisk,HI
+322,Kongeørn,Fugl,NINA
+98,Kopperrød slørsopp,Sopp,NINA
+385,Krikkand,Fugl,NINA
+247,Krykkje,Fugl,NINA
+100,Kusymre,Plante,NINA
+101,Kveite,Fisk,HI
+386,Kvinand,Fugl,NINA
+94,Køllesopper,Sopp,NINA
+104,Laks - kyst og elver,Fisk,NINA
+360,Laks i havet,Fisk,NINA
+105,Lange,Fisk,HI
+106,Lappkjuke,Sopp,NINA
+290,Lappspurv,Fugl,NINA
+439,Lavhei i villreinkommuner,Lav,NINA
+108,Liggende død ved (MiS) – arealandel,Habitat,NIBIO
+419,Liggende død ved – mengde,Habitat,NIBIO
+109,Lirype,Fugl,NINA
+111,Lodde,Fisk,HI
+251,Lomvi,Fugl,NINA
+253,Lunde,Fugl,NINA
+324,Løvsanger,Fugl,NINA
+115,Makrell,Fisk,HI
+248,Makrellterne,Fugl,NINA
+326,Munk,Fugl,NINA
+307,Myrsnipe,Fugl,NINA
+125,Myrtelg,Plante,NINA
+325,Måltrost,Fugl,NINA
+396,Nøtteskrike,Fugl,NINA
+130,Olavsstake,Plante,NINA
+384,Orrfugl,Fugl,NINA
+134,Oter ferskvannsbestand,Pattedyr,NINA
+135,Oter kystbestand,Pattedyr,NINA
+142,Palsmyr areal,Habitat,NINA
+145,Planteplankton (Chl a),Artsamfunn,NIVA
+146,Planteplankton innsjøer,Artsamfunn,NIVA
+252,Polarlomvi,Fugl,NINA
+149,Praktrødspore,Sopp,NINA
+151,Prestekrage,Plante,NINA
+152,Purpurlyng,Plante,NINA
+389,Ravn,Fugl,NINA
+156,Reker hav,Virvelløs,HI
+409,Ringdue,Fugl,NINA
+391,Ringtrost,Fugl,NINA
+433,Rogn-Osp-Selje,Plante,NIBIO
+153,Rådyr,Pattedyr,NINA
+249,Rødnebbterne,Fugl,NINA
+308,Rødstilk,Fugl,NINA
+406,Rødstjert,Fugl,NINA
+402,Rødstrupe,Fugl,NINA
+395,Rødvingetrost,Fugl,NINA
+165,Sei,Fisk,HI
+167,Sennegras,Plante,NINA
+298,Siland,Fugl,NINA
+369,Sild - havgående bestander,Fisk,HI
+440,Sildemåke,Fugl,NINA
+310,Sivspurv,Fugl,NINA
+339,Smalsoldogg,Plante,NINA
+370,Smågnagere - fjellbestander,Pattedyr,NINA
+332,Smågnagere - skogbestander,Pattedyr,NINA
+275,Smålom,Fugl,NINA
+311,Småspove,Fugl,NINA
+291,Snøspurv,Fugl,NINA
+180,Solblom,Plante,NINA
+292,Steinskvett,Fugl,NINA
+333,Stokkand,Fugl,NINA
+186,Storfugl,Fugl,NINA
+241,Storjo,Fugl,NINA
+277,Storlom,Fugl,NINA
+187,Storpiggslekten (sopp),Sopp,NINA
+236,Storskarv ssp carbo,Fugl,NINA
+237,Storskarv ssp sinensis,Fugl,NINA
+278,Strandsnipe,Fugl,NINA
+183,Stående død ved (MiS) – arealandel,Habitat,NIBIO
+418,Stående død ved – mengde,Habitat,NIBIO
+296,Svartand,Fugl,NINA
+246,Svartbak,Fugl,NINA
+328,Svarthvit fluesnapper,Fugl,NINA
+222,Svartkutling,Fisk,HI
+403,Svartmeis,Fugl,NINA
+194,Svartnende kantarell,Sopp,NINA
+195,Svartsonekjuke,Sopp,NINA
+393,Svartspett,Fugl,NINA
+397,Svarttrost,Fugl,NINA
+196,Sveltstarr,Plante,NINA
+312,Svømmesnipe,Fugl,NINA
+436,Tamrein,Pattedyr,NINA
+254,Teist,Fugl,NINA
+202,Tilstand kystlynghei,Habitat,NIBIO
+201,Tilstand semi-naturlig eng og strandeng,Habitat,NIBIO
+415,Tjeld,Fugl,NINA
+203,Tobis,Fisk,HI
+279,Toppand,Fugl,NINA
+330,Toppmeis,Fugl,NINA
+239,Toppskarv,Fugl,NINA
+378,Torsk - havsbestander,Fisk,HI
+313,Trane,Fugl,NINA
+405,Trekryper,Fugl,NINA
+401,Trepiplerke,Fugl,NINA
+207,Trær med hengelav (MiS),Lav,NIBIO
+209,Ulv,Pattedyr,NINA
+380,Ungsild (1-2 år),Fisk,HI
+208,Vanlig uer,Fisk,HI
+213,Vannplanter innsjø,Plante,NIVA
+215,Vier alpint belte,Plante,NINA
+216,Villrein,Pattedyr,NINA
+1,Ål,Fisk,HI
+293,Ærfugl,Fugl,NINA
+141,Øyepål,Fisk,HI

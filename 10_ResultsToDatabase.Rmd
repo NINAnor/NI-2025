@@ -24,6 +24,16 @@ For these reasons, we will not be using/working from Bård Pedersen's code, but 
 
 The workflow below contains the collation of indicator and ecosystem index data into joint tables that are then saved as .csv and handed to the database administrator for manual archiving.
 
+Before proceeding, we do open a connection to the NI database. We will need that to pull information on indicator data type. 
+
+```{r, eval = FALSE}
+NIdb_username <- Sys.getenv("NIdb_username")
+NIdb_password <- Sys.getenv("NIdb_password")
+
+NIcalc::getToken(username = NIdb_username,
+                 password = NIdb_password)
+```
+
 ## Indicator (index) data
 
 We start by retrieving the indicator list, then cycle through all indicators and collate the statistical summaries of: 
@@ -94,6 +104,16 @@ for(i in 1:nrow(indicatorList)){
 }
 ```
 
+For indicator index data, we additionally want to reduce the data to the representative years only. Even though some indicators have data for years prior to the first NI year ever used (1990) and for years in between NI update years, that data is often only available for a non-representative sample of areas. As a consequence, calculated indicator indices for those years may look very different than the ones for the focal years. 
+To avoid unnecessary confusion, we'll therefore only present values for the NI focal years (including 1990, if available), as well as the 1995 and 2005 if data is available, on the webpage. Below, we subset the data to the relevant years: 
+
+```{r, eval = FALSE}
+ind_focalYears <- c(1990, 1995, 2000, 2005, 2010, 2014, 2019, 2024)
+
+IndIndexData <- IndIndexData %>%
+  dplyr::filter(year_t %in% ind_focalYears)
+```
+
 Finally, we save the collated data as CSV for incorporation in the NI database: 
 ```{r, eval = FALSE}
 ## Make directory
@@ -122,26 +142,92 @@ readr::write_excel_csv(IndIndexData, file = "data_forUpload/IndicatorIndexData.c
 
 ## Nature index data
 
-For the calculated NI data, we list ecosystems, collate statistical summaries for all, and consequently save as CSV for incorporation in the NI database: 
+For the calculated NI data, we list ecosystems, collate statistical summaries and data compositions for all, and consequently save as CSV for incorporation in the NI database. Information on indicator data source (type) is not retained in the outputs of NIcalc, so this information we will have to pull from the database again.  
 
 ```{r, eval = FALSE}
 ## List ecosystems
 ecosystems <- c("Forest", "Mountain", "Wetlands", "OpenLowland", 
                 "Freshwater", "Coast", "Ocean")
 
-## Set up empty data frame for collation 
+## Set up empty data frames for collation 
 indexData <- data.frame()
+propDataSource <- data.frame()
+propFunGroup <- data.frame()
 
 ## Read and collate data for each ecosystem
 for(i in 1:length(ecosystems)){
   
+  # Statistical summaries of indicator values
   indexData_i <- readr::read_csv(paste0("results_", ecosystems[i], "/indexStatSummary.csv")) %>%
     dplyr::mutate(Ecosystem = ecosystems[i],
                   .before = 1)
   
   indexData <- indexData %>%
     dplyr::bind_rows(indexData_i)
+  
+  # Data source proportions
+  NIobj <- readRDS(paste0("NI2025_Data_", ecosystems[i], ".rds"))
+  
+  n_imputes <- nrow(NIobj$NAImputes$identifiers)
+  
+  usedData <- NIobj$importData$indicatorObservations$indicatorValues %>% 
+    dplyr::filter(!is.na(expectedValue)) %>%
+    dplyr::select(indId, ICunitId, yearId)
+  
+  indData_all <- data.frame()
+  indList <- unique(usedData$indId)
+  
+  for(j in 1:length(indList)){
+    indValues_j <- NIcalc::getIndicatorValues(indicatorID = indList[j])$indicatorValues %>%
+      dplyr::filter(yearName != "Referanseverdi" & !is.na(verdi)) %>%
+      dplyr::rename(indId = indicatorId, 
+                    ICunitId = areaId) %>%
+      dplyr::select(indId, ICunitId, yearId, datatypeName)
+    indData_all <- indData_all %>%
+      dplyr::bind_rows(indValues_j)
+  }
+
+  propDataSource_i <- usedData %>%
+    dplyr::left_join(indData_all, by = c("indId", "ICunitId", "yearId")) %>%
+    dplyr::group_by(datatypeName) %>%
+    dplyr::summarise(number = n()) %>%
+    dplyr::mutate(datatypeName = ifelse(datatypeName == "Beregnet fra modeller", "Modellberegning", datatypeName)) %>%
+    dplyr::bind_rows(data.frame(datatypeName = "Imputering", number = n_imputes)) %>%
+    dplyr::mutate(proportion = number/sum(number),
+                  ecosystem = ecosystems[i])
+    
+  propDataSource <- propDataSource %>%
+    dplyr::bind_rows(propDataSource_i)
+    
+  
+  # Trophic group proportions
+  propFunGroup_i <- NIobj$InputData$indicators %>%
+    dplyr::select(functionalGroup) %>%
+    dplyr::group_by(functionalGroup) %>%
+    dplyr::summarise(number = n()) %>%
+    dplyr::mutate(proportion = number/nrow(NIobj$InputData$indicators),
+                  ecosystem = ecosystems[i])
+  
+  propFunGroup <- propFunGroup %>%
+    dplyr::bind_rows(propFunGroup_i)
 }
+
+## Add proportions across all ecosystems
+propDataSource_all <- propDataSource %>%
+  dplyr::group_by(datatypeName) %>%
+  dplyr::summarise(number = sum(number)) %>%
+  dplyr::mutate(proportion = number/sum(number),
+                ecosystem = "Overall")
+propDataSource <- propDataSource %>%
+  dplyr::bind_rows(propDataSource_all)
+
+propFunGroup_all <- propFunGroup %>%
+  dplyr::group_by(functionalGroup) %>%
+  dplyr::summarise(number = sum(number)) %>%
+  dplyr::mutate(proportion = number/sum(number),
+                ecosystem = "Overall")
+propFunGroup <- propFunGroup %>%
+  dplyr::bind_rows(propFunGroup_all)
 
 ## Convert numbers to character to avoid scientific notation in CSV
 indexData <- indexData  %>%
@@ -149,4 +235,6 @@ indexData <- indexData  %>%
 
 ## Write to CSV
 readr::write_excel_csv(indexData, file = "data_forUpload/NatureIndex_allEcosystems.csv")
+readr::write_excel_csv(propDataSource, file = "data_forUpload/DataSource_Proportions.csv")
+readr::write_excel_csv(propFunGroup, file = "data_forUpload/FunctionalGroup_Proportions.csv")
 ```

@@ -308,19 +308,19 @@ if(!dir.exists(plotPath)){
 }
 
 pdf(paste0(plotPath, "/weights35.pdf"), width = 6, height = 5)
-NIcalc::plotWeights(Index$wholeArea$'2024', main = paste0("NI2025 (", Ecosystem[1], ")"))
+NIcalc::plotWeights(Index$wholeArea$'2024', main = paste0("NI2025 (", Ecosystem[2], ")"), xlab = "Vekt")
 dev.off()
 
 pdf(paste0(plotPath, "/weightsAll.pdf"), width = 6, height = 9)
-NIcalc::plotWeights(Index$wholeArea$'2024', allBars = TRUE, main = paste0("NI2025 (", Ecosystem[1], ")"))
+NIcalc::plotWeights(Index$wholeArea$'2024', allBars = TRUE, main = paste0("NI2025 (", Ecosystem[2], ")"), xlab = "Vekt")
 dev.off()
 
 svglite::svglite(paste0(plotPath, "/weights35.svg"), width = 6, height = 5)
-NIcalc::plotWeights(Index$wholeArea$'2024', main = paste0("NI2025 (", Ecosystem[1], ")"))
+NIcalc::plotWeights(Index$wholeArea$'2024', main = paste0("NI2025 (", Ecosystem[2], ")"), xlab = "Vekt")
 dev.off()
 
 svglite::svglite(paste0(plotPath, "/weightsAll.svg"), width = 6, height = 9)
-NIcalc::plotWeights(Index$wholeArea$'2024', allBars = TRUE, main = paste0("NI2025 (", Ecosystem[1], ")"))
+NIcalc::plotWeights(Index$wholeArea$'2024', allBars = TRUE, main = paste0("NI2025 (", Ecosystem[2], ")"), xlab = "Vekt")
 dev.off()
 ```
 A table containing all indicator weights in numerical format is saved under `r paste0(saveFolder, "/indicatorWeights.csv")`. 
@@ -329,7 +329,7 @@ A table containing all indicator weights in numerical format is saved under `r p
 
 Traditionally, NI has been presented using two different types of visualizations: time-series graphs of medians with 95% confidence intervals and maps of median values (for each year).
 
-The grpahical presentation of NI2025 has been extended and will include the following: 
+The graphical presentation of NI2025 has been extended and will include the following: 
 
 - Time-series graphs of medians and 95% confidence intervals, for the area-aggregated mean as before but also including values for each of the five major regions of Norway
 
@@ -371,13 +371,29 @@ standardTS2
 ```
 
 ```{r, include = FALSE}
+standardTS1_n <- NIflex::plotNI_StandardTS(Index = Index,
+                                           plotTitle = Ecosystem[2],
+                                           addAverage = TRUE,
+                                           truncateY = FALSE,
+                                           norwegian = TRUE)
+standardTS2_n <- NIflex::plotNI_StandardTS(Index = Index,
+                                           plotTitle = Ecosystem[2],
+                                           addAverage = TRUE,
+                                           truncateY = TRUE,
+                                           norwegian = TRUE)
+
+
 ggsave(file = paste0(plotPath, "/TimeSeries_standard.svg"), plot = standardTS1, width = 7, height = 4)
+ggsave(file = paste0(plotPath, "/TimeSeries_standard_norsk.svg"), plot = standardTS1_n, width = 7, height = 4)
 
 ggsave(file = paste0(plotPath, "/TimeSeries_standard.pdf"), plot = standardTS1, width = 7, height = 4)
+ggsave(file = paste0(plotPath, "/TimeSeries_standard_norsk.pdf"), plot = standardTS1_n, width = 7, height = 4)
 
 ggsave(file = paste0(plotPath, "/TimeSeries_standard_trunc.svg"), plot = standardTS2, width = 7, height = 4)
+ggsave(file = paste0(plotPath, "/TimeSeries_standard_trunc_norsk.svg"), plot = standardTS2_n, width = 7, height = 4)
 
 ggsave(file = paste0(plotPath, "/TimeSeries_standard_trunc.pdf"), plot = standardTS2, width = 7, height = 4)
+ggsave(file = paste0(plotPath, "/TimeSeries_standard_trunc_norsk.pdf"), plot = standardTS2_n, width = 7, height = 4)
 ```
 
 
@@ -405,16 +421,34 @@ densTS2 <- NIflex::plotNI_DensityRidgeTS(Index = Index,
 densTS2
 ```
 ```{r, include = FALSE}
+densTS1_n <- NIflex::plotNI_DensityRidgeTS(Index = Index, 
+                                           OutputType = OutputType, 
+                                           ecosystem = ecosystem_use, 
+                                           theme = theme,
+                                           allAreas = FALSE, 
+                                           selectedArea  = "wholeArea",
+                                           norwegian = TRUE)
+densTS2_n <- NIflex::plotNI_DensityRidgeTS(Index = Index, 
+                                           OutputType = OutputType, 
+                                           ecosystem = ecosystem_use, 
+                                           theme = theme,
+                                           allAreas = TRUE,
+                                           norwegian = TRUE)
+
 ggsave(file = paste0(plotPath, "/TimeSeries_density.svg"), plot = densTS1, width = 7, height = 5)
+ggsave(file = paste0(plotPath, "/TimeSeries_density_norsk.svg"), plot = densTS1_n, width = 7, height = 5)
 
 ggsave(file = paste0(plotPath, "/TimeSeries_density.pdf"), plot = densTS1, width = 7, height = 5)
+ggsave(file = paste0(plotPath, "/TimeSeries_density_norsk.pdf"), plot = densTS1_n, width = 7, height = 5)
 
 ggsave(file = paste0(plotPath, "/TimeSeries_density_byArea.svg"), plot = densTS2, width = 7, height = 5)
+ggsave(file = paste0(plotPath, "/TimeSeries_density_byArea_norsk.svg"), plot = densTS2_n, width = 7, height = 5)
 
 ggsave(file = paste0(plotPath, "/TimeSeries_density_byArea.pdf"), plot = densTS2, width = 7, height = 5)
+ggsave(file = paste0(plotPath, "/TimeSeries_density_byArea_norsk.pdf"), plot = densTS2_n, width = 7, height = 5)
 ```
 
-### Median, uncertainty, and dislocation maps
+### Median, uncertainty, and displacement maps
 
 Maps are very popular tools for disseminating results nowadays, but their major drawback is that usually, they are presented without associated uncertainty. For that reason, NI2025 will have an added focus on visualizing uncertainty associated with maps, too. 
 There are two key elements of uncertainty in NI calculations: 
@@ -440,7 +474,7 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    OutputType = OutputType, 
                    ecosystem = ecosystem_use,
                    plotMedian = TRUE, plotCI = TRUE, plotDisplacement = FALSE, 
-                   interactiveMap = FALSE)
+                   interactiveMap = TRUE)
 ```
 
 And we can do the same with location displacement instead of CI width: 
@@ -450,7 +484,7 @@ NIflex::plotNI_Map(shp = CustomNI_map,
                    OutputType = OutputType, 
                    ecosystem = ecosystem_use,
                    plotMedian = TRUE, plotCI = FALSE, plotDisplacement = TRUE, 
-                   interactiveMap = FALSE)
+                   interactiveMap = TRUE)
 ```
 
 Static versions of all types of maps for the different years are saved under `r paste0(plotPath, "/Maps")`.
@@ -508,5 +542,54 @@ for(t in 1:length(years)){
   dev.off()
   
   
+}
+```
+```{r, message = FALSE, include = FALSE}
+for(t in 1:length(years)){
+  
+  ## Draw maps
+  mapMedian_n <- NIflex::plotNI_Map(shp = CustomNI_map, 
+                                  year = years[t], 
+                                  OutputType = OutputType, 
+                                  ecosystem = ecosystem_use,
+                                  plotMedian = TRUE, plotCI = FALSE, plotDisplacement = FALSE,
+                                  norwegian = TRUE,
+                                  interactiveMap = FALSE)
+  mapCI_n <- NIflex::plotNI_Map(shp = CustomNI_map, 
+                              year = years[t], 
+                              OutputType = OutputType, 
+                              ecosystem = ecosystem_use,
+                              plotMedian = FALSE, plotCI = TRUE, plotDisplacement = FALSE, 
+                              norwegian = TRUE,
+                              interactiveMap = FALSE)
+  mapDisp_n <- NIflex::plotNI_Map(shp = CustomNI_map, 
+                                year = years[t], 
+                                OutputType = OutputType, 
+                                ecosystem = ecosystem_use,
+                                plotMedian = FALSE, plotCI = FALSE, plotDisplacement = TRUE, 
+                                norwegian = TRUE,
+                                interactiveMap = FALSE)
+  
+  ## Save as multipage pdf
+  pdf(paste0(plotPath, "/Maps/NI2025_", Ecosystem[1], "_", years[t], "_norsk.pdf"), width = 5, height = 5)
+  
+  print(mapMedian_n)
+  print(mapCI_n)
+  print(mapDisp_n)
+  
+  dev.off()
+  
+  ## Save as svg
+  svglite(paste0(plotPath, "/Maps/NI2025_", Ecosystem[1], "_Median_", years[t], "_norsk.svg"), width = 5, height = 5)
+  print(mapMedian_n)
+  dev.off()
+  
+  svglite(paste0(plotPath, "/Maps/NI2025_", Ecosystem[1], "_CIwidth_", years[t], "_norsk.svg"), width = 5, height = 5)
+  print(mapCI_n)
+  dev.off()
+  
+  svglite(paste0(plotPath, "/Maps/NI2025_", Ecosystem[1], "_Displacement_", years[t], "_norsk.svg"), width = 5, height = 5)
+  print(mapDisp_n)
+  dev.off()
 }
 ```
