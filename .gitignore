@@ -105,4 +105,11 @@ NI2025_Data_Freshwater_themeEutrophication.rds
 01_IndicatorData.html
 
 # Bookdown files
-_book
+_book/
+_bookdown_files/
+_main_files/
+_main.Rmd
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
