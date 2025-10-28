@@ -1,13 +1,6 @@
----
-title: 'Indicator data: calculations and visualizations'
-author: "Chloé R. Nater"
-date: "`r Sys.Date()`"
-output:
-  html_document: default
-  pdf_document: default
----
+# Indicator data: calculations and visualizations
 
-```{r setup, include=FALSE}
+```{r setup01, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(NIcalc)
 library(NIflex)

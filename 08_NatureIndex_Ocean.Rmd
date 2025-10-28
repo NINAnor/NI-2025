@@ -1,13 +1,6 @@
----
-title: 'Nature Index: Ocean ecosystem'
-author: "Chloé R. Nater"
-date: "`r Sys.Date()`"
-output:
-  html_document: default
-  pdf_document: default
----
+# Ocean ecosystem
 
-```{r setup, include=FALSE}
+```{r setup08, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(NIcalc)
 library(NIflex)
@@ -35,7 +28,7 @@ The workflow is largely based on scripts developed for automating NI calculation
 - Remote storage of results in NI database to be used for visualizations on the webpage
 
 
-### A note on reference value uncertainty
+### A note on reference value uncertainty {.unnumbered}
 Reference values can be -- and have been -- entered into the NI database either with or without associated uncertainty. Most reference values have been set early on in the NI work (period 2010-2014) and not changed since; a few have been updated or re-calibrated since. The approaches for setting reference values across the indicator set have been extremely variable, and neither particularly structured nor harmonized. This is one of the reasons why reference value uncertainty has not been included in previous iterations of NI (NI2010, NI2015, NI2020). 
 
 Investigating the effects of including reference value uncertainty on NI calculations is not part of the commission for NI2025, either. As such, also NI2025 is calculating without accounting for reference value uncertainty. 

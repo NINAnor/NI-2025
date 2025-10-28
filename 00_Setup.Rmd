@@ -1,15 +1,4 @@
----
-title: "Setup and preparations"
-author: "Chloé R. Nater"
-output: html_document
-date: "`r Sys.Date()`"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(remotes)
-
-```
+# Setup and preparations
 
 This document describes the steps required for getting started with Nature Index (NI) analyses. 
 If you already have 1) installations of the latest versions of "NIcalc" and "NIflex" and 2) access to the NI database via login credentials set up as R environmental variables, you can skip the steps described in this document. 
@@ -41,7 +30,7 @@ remotes::install_github(repo = "NINAnor/NIflex", build_vignettes = TRUE)
 ```
 In addition, there are a few CRAN packages that are required. These can be installed using the following code: 
 
-```{r}
+```{r, eval = FALSE}
 pkgList <- c("dplyr", "ggplot2", "ggridges", "magrittr", "paletteer", "pals", "readr", "svglite", "usethis")
 
 install.packages(pkgList)
