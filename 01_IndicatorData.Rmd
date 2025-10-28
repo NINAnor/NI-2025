@@ -485,7 +485,7 @@ TS_indIdx_std <- readRDS("results_Indicators/PlotList_TimeSeries_indIdx_std.rds"
 
 Below, we show the time series plots for raw and scaled indicator data. 
 
-```{r, results = "asis", echo = FALSE, eval = TRUE, out.width = '50%'}
+```{r, results = "asis", echo = FALSE, eval = FALSE, out.width = '50%'}
 ## Plot display for HTML render
 for(i in 1:nrow(indicatorList)){
 
