@@ -101,7 +101,7 @@ names(indicatorImport) <- indicatorList$id
 
 saveRDS(indicatorImport, "data/indicatorImport.rds")
 ```
-```{r, echo = FALSE}
+```{r, eval = FALSE, echo = FALSE}
 indicatorImport <- readRDS("data/IndicatorImport.rds")
 ```
 
@@ -122,7 +122,7 @@ names(indicatorData) <- indicatorList$id
 
 saveRDS(indicatorData, "data/indicatorData_assembled.rds")
 ```
-```{r, echo = FALSE}
+```{r, eval = FALSE, echo = FALSE}
 indicatorData <- readRDS("data/IndicatorData_assembled.rds")
 ```
 
