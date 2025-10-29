@@ -23,6 +23,7 @@ R -e '
 '
 """
 pull_data = "dvc pull"
+all = {depends-on = ["setup", "pull_data", "build"]}
 
 [dependencies]
 # dependencies of NIcalc
