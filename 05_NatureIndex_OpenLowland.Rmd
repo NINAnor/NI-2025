@@ -117,7 +117,7 @@ forceReRun <- FALSE
 To access and download indicator data, we need to retrieve a token from the NI database. 
 For that to work, we need access to our NI database access credentials; we retrieve those from environmental variables (if you have not saved them as environmental variables, you can find the code for doing that in chapter 0; alternatively, you can also manually set them here):
 
-```{r}
+```{r, eval = FALSE}
 NIdb_username <- Sys.getenv("NIdb_username")
 NIdb_password <- Sys.getenv("NIdb_password")
 ```
@@ -135,7 +135,7 @@ The entire workflow for NI calculations is contained in `NIflex::calclulateCusto
 The list of indicators that is used to calculate NI for specific ecosystems is retrieved directly from the NI database and is shown further down (after calculations). 
 `NIflex` does provide the option to drop selected indicators; however, as the NI database is currently updated in terms of active/inactive indicators for NI2025, we do not need to drop any additional indicators.
 
-```{r, message = FALSE}
+```{r, eval = FALSE, message = FALSE}
 
 if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
   
