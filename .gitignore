@@ -67,6 +67,9 @@ data/indicatorData_assembled.rds
 data/simulated_IndicatorData
 data/IndicatorData_StatSummaries
 
+# ShapeLibrary
+Shapefiles/
+
 # Graphics
 *.pdf
 *.svg
