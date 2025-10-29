@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 
 ## Read in NI object
-skog <- readRDS("NI2025_Data_Forest.rds")
+skog <- readRDS("data/NI2025_Data_Forest.rds")
 
 
 ## Extract and summarize imputed values
