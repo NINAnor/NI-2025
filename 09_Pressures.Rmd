@@ -622,7 +622,7 @@ NIReduction_latest_table <-NIReduction_latest_table %>%
                 Påvirkningsfaktor = factor(Påvirkningsfaktor, levels = pressure_order))
   
 ## Set color palette
-plot.palette <- c("#8B9742", "#2b6EAA", "#004B46", "#A57082", "#FF7D00")
+plot.palette <- c("#9DB751", "#68C3CD", "#283D4E", "#D0D0D0", "#CF8713")
 
 ## Plot for overall mean
 p_mean <- ggplot(meanNIReduction_table) + 
