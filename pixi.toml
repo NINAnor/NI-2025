@@ -22,6 +22,7 @@ R -e '
   )
 '
 """
+pull_data = "dvc pull"
 
 [dependencies]
 # dependencies of NIcalc
@@ -58,3 +59,6 @@ r-usethis = ">=3.2.1,<4"
 r-reshape2 = ">=1.4.4,<2"
 r-remotes = ">=2.5.0,<3" # to install NIcalc and NIflex
 r-bookdown = ">=0.45,<0.46"
+# data
+dvc = ">=3.63.0,<4"
+dvc-s3 = ">=3.2.2,<4"
