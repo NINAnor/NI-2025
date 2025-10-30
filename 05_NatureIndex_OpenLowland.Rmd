@@ -94,7 +94,7 @@ Diagnostics <- TRUE # Yes
 TestRun <- FALSE # No
 
 ## Shapefiles library path
-shapeLibraryPath <- Sys.getenv("NI_shapeLibraryPath", unset = "Shapefiles")
+shapeLibraryPath <- Sys.getenv("NI_shapeLibraryPath", unset = "data/Shapefiles")
 #shapeLibraryPath <- "P:/412430_naturindeks/Beregninger/Shapefiles" # for running locally on NINA PC
 #shapeLibraryPath <- "/data/P-Prosjekter2/412430_naturindeks/Beregninger/Shapefiles" # for running on NINA RStudio server
 
@@ -138,7 +138,7 @@ The list of indicators that is used to calculate NI for specific ecosystems is r
 
 ```{r, eval = FALSE, message = FALSE}
 
-if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
+if(!file.exists(paste0("data/NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
   
   ## Assign indicator set
   indicators_use <- NULL
@@ -177,10 +177,10 @@ if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
 `NIflex::calculateCustomIndex()` automatically saves the results into the working directory as "CustomIndex_Data.rds". Since we are now handling multiple indices (NI for all seven ecosystems, as well as a couple of thematic indices), we want to make sure they all have logical and individual file names. We therefore rename the output file: 
 
 ```{r}
-if(!file.exists(paste0("NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
+if(!file.exists(paste0("data/NI2025_Data_", Ecosystem[1], ".rds")) | forceReRun){
   
   file.rename(from = "CustomIndex_Data.rds",
-              to = paste0("NI2025_Data_", Ecosystem[1], ".rds"))
+              to = paste0("data/NI2025_Data_", Ecosystem[1], ".rds"))
 }
 ```
 The output file contains a lot of information and metadata on the indicator set, calculated index, spatial units, calculation parameters, etc. It's also an R object, making it not the best "reference" for looking up values for non-specialists (including the "Faggruppe" for NI that will be responsible for interpreting and reporting results). For that reason, we will summarise the most important numbers and save them as .csv files in designated folders. 
@@ -192,7 +192,7 @@ For now, we will do this for the following parts of the results:
 
 ```{r}
 if(!exists("CustomNI")){
-  CustomNI <- readRDS(paste0("NI2025_Data_", Ecosystem[1], ".rds"))
+  CustomNI <- readRDS(paste0("data/NI2025_Data_", Ecosystem[1], ".rds"))
 }
 
 ## Make target folder (if non-existent)
@@ -272,7 +272,7 @@ Irrespective of whether we have just re-run calculations, we start by loading in
 ```{r, message = FALSE}
 saveFolder <- paste0("results_", Ecosystem[1])
 
-Index <- readRDS(paste0("NI2025_Data_", Ecosystem[1], ".rds"))$CustomIndex
+Index <- readRDS(paste0("data/NI2025_Data_", Ecosystem[1], ".rds"))$CustomIndex
 
 indicatorList <- readr::read_csv(paste0(saveFolder, "/indicatorList.csv"))
 indicatorWeights <- readr::read_csv(paste0(saveFolder, "/indicatorWeights.csv"))

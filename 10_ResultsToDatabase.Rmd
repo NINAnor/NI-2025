@@ -161,7 +161,7 @@ for(i in 1:length(ecosystems)){
     dplyr::bind_rows(indexData_i)
   
   # Data source proportions
-  NIobj <- readRDS(paste0("NI2025_Data_", ecosystems[i], ".rds"))
+  NIobj <- readRDS(paste0("data/NI2025_Data_", ecosystems[i], ".rds"))
   
   n_imputes <- nrow(NIobj$NAImputes$identifiers)
   

@@ -1,0 +1,7 @@
+[core]
+    remote = nina-http-int
+['remote "nina-s3-int"']
+    url = s3://miljodata-test/dvc/github.com/NI-2025
+    endpointurl = https://s3-int-1.nina.no
+['remote "nina-http-int"']
+    url = https://s3-int-1.nina.no/miljodata-test/dvc/github.com/NI-2025

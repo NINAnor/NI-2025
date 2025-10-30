@@ -262,7 +262,7 @@ for (i in 1:length(ecosystems)){
   message(paste0("Running pressure factor analysis for ecosystem: ", ecosystems[i]))
   
   ## Load in corresponding NI object
-  eco_NIobject <- readRDS(paste0("NI2025_Data_", ecosystems[i], ".rds"))
+  eco_NIobject <- readRDS(paste0("data/NI2025_Data_", ecosystems[i], ".rds"))
   
   ## Assign data, imputations, and calculation parameters
   dataSet <- eco_NIobject$InputData

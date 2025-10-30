@@ -1,0 +1,65 @@
+[workspace]
+authors = ["Chloé R. Nater <chloe.nater@nina.no>"]
+channels = ["conda-forge"]
+name = "NI-2025"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+setup = """
+R -e '
+  remotes::install_github(
+    "NINAnor/NIflex",
+    upgrade = "never"
+  )
+'
+"""
+build = """
+R -e '
+  bookdown::render_book(
+    input = "index.Rmd",
+    output_format = "bookdown::gitbook"
+  )
+'
+"""
+pull_data = "dvc pull"
+all = {depends-on = ["setup", "pull_data", "build"]}
+
+[dependencies]
+# dependencies of NIcalc
+r-base = ">=4.5.1,<4.6" # stats, graphics, grdevices
+r-gamlss = ">=5.5_0,<6"
+r-truncnorm = ">=1.0_9,<2"
+r-msm = ">=1.8.2,<2"
+r-tibble = ">=3.3.0,<4"
+r-httr = ">=1.4.7,<2"
+r-plyr = ">=1.8.9,<2"
+r-jsonlite = ">=2.0.0,<3"
+r-rjsonio = ">=2.0.0,<3"
+r-uuid = ">=1.2_1,<2"
+r-distr = ">=2.9.7,<3"
+r-lattice = ">=0.22_7,<0.23"
+r-mice = ">=3.18.0,<4"
+# dependencies of NIflex
+r-ggplot2 = ">=4.0.0,<5"
+r-ggridges = ">=0.5.7,<0.6"
+r-rcolorbrewer = ">=1.1_3,<2"
+r-rlang = ">=1.1.6,<2"
+r-sf = ">=1.0_21,<2"
+r-stringr = ">=1.5.2,<2"
+r-tmap = ">=4.2,<5"
+# direct dependencies
+r-tinytex = ">=0.57,<0.58"
+r-dplyr = ">=1.1.4,<2"
+r-magrittr = ">=2.0.4,<3"
+r-paletteer = ">=1.6.0,<2"
+r-pals = ">=1.10,<2"
+r-readr = ">=2.1.5,<3"
+r-svglite = ">=2.2.2,<3"
+r-usethis = ">=3.2.1,<4"
+r-reshape2 = ">=1.4.4,<2"
+r-remotes = ">=2.5.0,<3" # to install NIcalc and NIflex
+r-bookdown = ">=0.45,<0.46"
+# data
+dvc = ">=3.63.0,<4"
+dvc-s3 = ">=3.2.2,<4"
