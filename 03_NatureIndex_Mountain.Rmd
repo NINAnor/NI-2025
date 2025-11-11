@@ -465,7 +465,7 @@ CustomNI_map <- NIflex::geomapNI(Index = Index,
 Then we are ready to plot the pair of maps representing the median values and value uncertainty: 
 ```{r, warnings = FALSE, message = FALSE}
 NIflex::plotNI_Map(shp = CustomNI_map, 
-                   year = mapYear, 
+                   year = mapYear,
                    OutputType = OutputType, 
                    ecosystem = ecosystem_use,
                    plotMedian = TRUE, plotCI = TRUE, plotDisplacement = FALSE, 
@@ -493,6 +493,13 @@ if(!dir.exists(paste0(plotPath, "/Maps"))){
 
 
 for(t in 1:length(years)){
+  
+  ## Set up map base
+  CustomNI_map <- NIflex::geomapNI(Index = Index, 
+                                 year = years[t], 
+                                 OutputType = OutputType, 
+                                 ecosystem = ecosystem_use,
+                                 shapeLibraryPath = shapeLibraryPath)
   
   ## Draw maps
   mapMedian <- NIflex::plotNI_Map(shp = CustomNI_map, 
@@ -541,6 +548,13 @@ for(t in 1:length(years)){
 ```
 ```{r, message = FALSE, include = FALSE}
 for(t in 1:length(years)){
+  
+  ## Set up map base
+  CustomNI_map <- NIflex::geomapNI(Index = Index, 
+                                 year = years[t], 
+                                 OutputType = OutputType, 
+                                 ecosystem = ecosystem_use,
+                                 shapeLibraryPath = shapeLibraryPath)
   
   ## Draw maps
   mapMedian_n <- NIflex::plotNI_Map(shp = CustomNI_map, 
